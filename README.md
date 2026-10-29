@@ -2,9 +2,13 @@
 
 Forum **create-project** (starter **2.0** + astral-core **^2**) : forums, sujets, posts, FAQ modérée.
 
+[![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)](https://www.php.net)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue)](./CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![Tests](https://img.shields.io/badge/tests-PHPUnit%20OK-9933CC)](./phpunit.xml)
+
 | | |
 |---|---|
-| **Version** | **0.1.0** |
 | **UI** | Nova **maroon** (`#9f1239`) |
 | **URL locale** | [http://astral-forum.local/](http://astral-forum.local/) |
 | **Roadmap 1.0** | [ROADMAP.md](./ROADMAP.md) |
