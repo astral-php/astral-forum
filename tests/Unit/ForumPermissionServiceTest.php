@@ -1,0 +1,75 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit;
+
+use App\Models\Forum;
+use App\Models\Topic;
+use App\Models\User;
+use App\Services\ForumPermissionService;
+use Core\Auth\Auth;
+use Core\Auth\Role;
+use Core\Session;
+use PHPUnit\Framework\TestCase;
+
+final class ForumPermissionServiceTest extends TestCase
+{
+    private ForumPermissionService $permissions;
+
+    protected function setUp(): void
+    {
+        $_SESSION = [];
+        $this->permissions = new ForumPermissionService();
+    }
+
+    public function test_guest_cannot_create_topic(): void
+    {
+        $forum = new Forum();
+        $forum->status = 'active';
+        $forum->type = 'general';
+
+        $auth = new Auth(new Session());
+        $this->assertFalse($this->permissions->canCreateTopic($forum, $auth));
+    }
+
+    public function test_member_cannot_reply_on_faq(): void
+    {
+        $forum = new Forum();
+        $forum->status = 'active';
+        $forum->type = 'faq';
+
+        $topic = new Topic();
+        $topic->status = 'published';
+        $topic->is_locked = 0;
+
+        $user = new User();
+        $user->id = 1;
+        $user->name = 'Member';
+        $user->email = 'm@example.com';
+        $user->role = Role::User->value;
+
+        $auth = new Auth(new Session());
+        $auth->login($user);
+
+        $this->assertFalse($this->permissions->canReply($forum, $topic, $auth));
+    }
+
+    public function test_member_can_create_in_general(): void
+    {
+        $forum = new Forum();
+        $forum->status = 'active';
+        $forum->type = 'general';
+
+        $user = new User();
+        $user->id = 2;
+        $user->name = 'Member';
+        $user->email = 'm2@example.com';
+        $user->role = Role::User->value;
+
+        $auth = new Auth(new Session());
+        $auth->login($user);
+
+        $this->assertTrue($this->permissions->canCreateTopic($forum, $auth));
+    }
+}
