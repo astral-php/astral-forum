@@ -1,9 +1,9 @@
 # Astral Forum
 
-Forum **create-project** (starter **2.0** + astral-core **^2**) : forums, sujets, posts, FAQ modérée.
+Forum **create-project** (starter **2.1** + astral-core **^2.1**) : forums, sujets, posts, FAQ modérée.
 
 [![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)](https://www.php.net)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.1.1-blue)](./CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![Tests](https://img.shields.io/badge/tests-PHPUnit%20OK-9933CC)](./phpunit.xml)
 
@@ -32,7 +32,7 @@ Ouvrir **http://astral-forum.local/** (ou configurer le vhost) → `/register` (
 
 ### Dépendances clés
 
-- `astral-php/astral-core:^2.0`
+- `astral-php/astral-core:^2.1`
 - `astral-php/astral-form:^0.1.2` (éviter la contrainte exacte `0.1` → résout 0.1.0 + hub ^1)
 - `astral-php/astral-cache:^0.1`
 

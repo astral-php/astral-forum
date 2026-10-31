@@ -1,8 +1,8 @@
 {
   "name": "astral-php/astral-forum",
-  "description": "Astral Forum — forums, sujets, posts et FAQ modérée (create-project starter 2.0)",
+  "description": "Astral Forum — forums, sujets, posts et FAQ modérée (create-project starter 2.1)",
   "type": "project",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "keywords": [
     "astral",
@@ -14,7 +14,7 @@
   "require": {
     "php": "^8.3",
     "astral-php/astral-cache": "^0.1",
-    "astral-php/astral-core": "^2.0",
+    "astral-php/astral-core": "^2.1",
     "astral-php/astral-form": "^0.1.2"
   },
   "require-dev": {

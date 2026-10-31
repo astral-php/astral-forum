@@ -9,6 +9,16 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 Voir [ROADMAP.md](./ROADMAP.md) pour le chemin vers **1.0.0**.
 
+## [0.1.1] - 2026-10-31
+
+### Modifié
+
+- `astral-php/astral-core` **^2.1** (bump technique feuille 2.1 **P3** — pas de features produit).
+
+### Notes
+
+- PHP `^8.3` inchangé. Phases produit 0.2→1.0 : [ROADMAP.md](./ROADMAP.md).
+
 ## [0.1.0] - 2026-10-29
 
 ### Ajouté
