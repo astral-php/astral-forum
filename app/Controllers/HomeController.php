@@ -10,7 +10,7 @@ use Core\Http\Response;
 use Core\View;
 
 /**
- * Accueil du starter — invitation à créer le premier admin + liens écosystème.
+ * Accueil forum — invitation à créer le premier admin + entrée forums.
  */
 final class HomeController extends AbstractController
 {
@@ -18,8 +18,8 @@ final class HomeController extends AbstractController
         View $view,
         private UserDao $userDao,
         private string $version = '0.1.1',
-        private string $githubUrl = 'https://github.com/astral-php',
-        private string $websiteUrl = 'https://github.com/astral-php',
+        private string $githubUrl = 'https://github.com/astral-php/astral-forum',
+        private string $websiteUrl = 'https://astral-php.dev',
     ) {
         parent::__construct($view);
     }
@@ -27,7 +27,7 @@ final class HomeController extends AbstractController
     public function index(): Response
     {
         return $this->render('home/index', [
-            'title'      => 'Astral Starter',
+            'title'      => 'Astral Forum',
             'version'    => $this->version,
             'hasUsers'   => $this->userDao->count() > 0,
             'githubUrl'  => $this->githubUrl,
