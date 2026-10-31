@@ -9,6 +9,12 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 Voir [ROADMAP.md](./ROADMAP.md) pour le chemin vers **1.0.0**.
 
+## [0.1.2] - 2026-10-31
+
+### Corrigé
+
+- Dépendance **astral-core 2.1.2** — restaure `bin/console`.
+
 ## [0.1.1] - 2026-10-31
 
 ### Modifié
