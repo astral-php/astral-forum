@@ -15,4 +15,9 @@
             <button type="submit" class="btn btn-ghost">Retirer</button>
         </form>
     <?php endif ?>
+    <?php if ($submission->canResubmit()): ?>
+        <p style="margin-top:1rem">
+            <a class="btn btn-primary" href="/account/faq-proposals/<?= (int) $submission->id ?>/resubmit">Resoumettre</a>
+        </p>
+    <?php endif ?>
 </section>

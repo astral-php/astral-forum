@@ -9,6 +9,20 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 Voir [ROADMAP.md](./ROADMAP.md) pour le chemin vers **1.0.0**.
 
+## [0.4.0] - 2026-11-01
+
+### Ajouté
+
+- Compteurs `reply_count` / `view_count` sur les sujets (+ vues dédupliquées par session).
+- Cache liste forums via IDs (`ForumCatalogService`).
+- FAQ : `allow_member_replies` configurable ; resoumission après rejet.
+- Abonnements sujets + notifications e-mail sync sur réponse.
+- Lien profil auteur sur les messages.
+
+### Migration
+
+- `2026_11_01_000003_forum_040_counters_subscriptions.php`
+
 ## [0.3.0] - 2026-11-01
 
 ### Ajouté

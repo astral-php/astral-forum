@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Dao\ForumDao;
 use App\Dao\TopicDao;
+use App\Services\ForumCatalogService;
 use App\Services\ForumPermissionService;
 use Controller\AbstractController;
 use Core\Auth\Auth;
@@ -22,6 +23,7 @@ final class ForumController extends AbstractController
         private ForumDao $forumDao,
         private TopicDao $topicDao,
         private ForumPermissionService $permissions,
+        private ForumCatalogService $catalog,
         private Auth $auth,
     ) {
         parent::__construct($view);
@@ -29,10 +31,9 @@ final class ForumController extends AbstractController
 
     public function index(): Response
     {
-        // Cache fichier astral-cache refuse les objets ; listes via DAO (cache array/ids plus tard).
         return $this->render('forums/index', [
-            'title'  => 'Forums',
-            'forums' => $this->forumDao->findPublicActive(),
+            'title' => 'Forums',
+            'forums' => $this->catalog->publicActive(),
         ]);
     }
 
@@ -47,13 +48,13 @@ final class ForumController extends AbstractController
         $result = $this->topicDao->paginatePublishedByForum($forum->id, $page, 20);
 
         return $this->render('forums/show', [
-            'title'            => $forum->name,
-            'forum'            => $forum,
-            'topics'           => $result['data'],
-            'total'            => $result['total'],
-            'pages'            => $result['pages'],
-            'current'          => $result['current'],
-            'canCreateTopic'   => $this->permissions->canCreateTopic($forum, $this->auth),
+            'title' => $forum->name,
+            'forum' => $forum,
+            'topics' => $result['data'],
+            'total' => $result['total'],
+            'pages' => $result['pages'],
+            'current' => $result['current'],
+            'canCreateTopic' => $this->permissions->canCreateTopic($forum, $this->auth),
         ]);
     }
 }

@@ -37,7 +37,7 @@ final class ForumPermissionService
             return false;
         }
 
-        if ($forum->isFaq()) {
+        if ($forum->isFaq() && !$forum->allowsMemberReplies()) {
             return false;
         }
 

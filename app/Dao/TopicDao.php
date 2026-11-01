@@ -45,6 +45,22 @@ final class TopicDao extends AbstractDao
         return $rows !== [];
     }
 
+    public function incrementReplyCount(int $topicId): void
+    {
+        $this->execute(
+            "UPDATE {$this->getTable()} SET reply_count = reply_count + 1, updated_at = :now WHERE id = :id",
+            [':id' => $topicId, ':now' => date('Y-m-d H:i:s')],
+        );
+    }
+
+    public function incrementViewCount(int $topicId): void
+    {
+        $this->execute(
+            "UPDATE {$this->getTable()} SET view_count = view_count + 1 WHERE id = :id",
+            [':id' => $topicId],
+        );
+    }
+
     /**
      * @return array{data: list<Topic>, total: int, pages: int, current: int, per_page: int}
      */

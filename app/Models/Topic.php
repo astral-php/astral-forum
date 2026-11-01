@@ -15,6 +15,8 @@ final class Topic
     public string $status = 'published';
     public int|bool $is_pinned = 0;
     public int|bool $is_locked = 0;
+    public int $reply_count = 0;
+    public int $view_count = 0;
     public ?string $last_post_at = null;
     public string $created_at = '';
     public string $updated_at = '';

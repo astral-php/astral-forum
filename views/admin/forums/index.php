@@ -21,6 +21,10 @@
                 <label for="description">Description</label>
                 <textarea class="input" id="description" name="description" rows="2"></textarea>
             </div>
+            <label style="display:flex;gap:0.5rem;align-items:center;font-size:0.9rem">
+                <input type="checkbox" name="allow_member_replies" value="1">
+                Autoriser les réponses membres (surtout FAQ)
+            </label>
             <button type="submit" class="btn btn-primary">Créer</button>
         </form>
     </div>
@@ -37,6 +41,11 @@
                     <input class="input" name="name" value="<?= htmlspecialchars($forum->name, ENT_QUOTES, 'UTF-8') ?>">
                     <textarea class="input" name="description" rows="2"><?= htmlspecialchars((string) $forum->description, ENT_QUOTES, 'UTF-8') ?></textarea>
                     <input class="input" name="position" type="number" value="<?= (int) $forum->position ?>">
+                    <label style="display:flex;gap:0.5rem;align-items:center;font-size:0.85rem">
+                        <input type="checkbox" name="allow_member_replies" value="1"
+                            <?= $forum->allowsMemberReplies() ? 'checked' : '' ?>>
+                        Réponses membres
+                    </label>
                     <button type="submit" class="btn btn-ghost">Enregistrer</button>
                 </form>
                 <?php if (!$forum->isGeneral() && $forum->isActive()): ?>

@@ -94,4 +94,23 @@ final class ForumDao extends AbstractDao
             "SELECT * FROM {$this->getTable()} ORDER BY position ASC, name ASC"
         );
     }
+
+    /**
+     * @param list<int> $ids
+     * @return list<Forum>
+     */
+    public function findByIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+        if ($ids === []) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        /** @var list<Forum> */
+        return $this->query(
+            "SELECT * FROM {$this->getTable()} WHERE id IN ({$placeholders})",
+            $ids,
+        );
+    }
 }

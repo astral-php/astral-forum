@@ -7,7 +7,7 @@ declare(strict_types=1);
  */
 return [
     'name'     => $_ENV['APP_NAME']     ?? 'Astral Forum',
-    'version'  => $_ENV['APP_VERSION']  ?? '0.3.0',
+    'version'  => $_ENV['APP_VERSION']  ?? '0.4.0',
     'env'      => $_ENV['APP_ENV']      ?? 'production',
     'debug'    => filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOLEAN),
     'timezone' => $_ENV['APP_TIMEZONE'] ?? 'UTC',
@@ -25,6 +25,8 @@ return [
 
     'forum' => [
         'edit_window_minutes' => (int) ($_ENV['FORUM_EDIT_WINDOW_MINUTES'] ?? 30),
+        'auto_subscribe' => filter_var($_ENV['FORUM_AUTO_SUBSCRIBE'] ?? true, FILTER_VALIDATE_BOOLEAN),
+        'notify_on_reply' => filter_var($_ENV['FORUM_NOTIFY_ON_REPLY'] ?? true, FILTER_VALIDATE_BOOLEAN),
         'throttle' => [
             'topic' => [
                 'max' => (int) ($_ENV['FORUM_THROTTLE_TOPIC_MAX'] ?? 5),

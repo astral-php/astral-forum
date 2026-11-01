@@ -40,6 +40,7 @@ final class ForumPermissionServiceTest extends TestCase
         $forum = new Forum();
         $forum->status = 'active';
         $forum->type = 'faq';
+        $forum->allow_member_replies = 0;
 
         $topic = new Topic();
         $topic->status = 'published';
@@ -55,6 +56,29 @@ final class ForumPermissionServiceTest extends TestCase
         $auth->login($user);
 
         $this->assertFalse($this->permissions->canReply($forum, $topic, $auth));
+    }
+
+    public function test_member_can_reply_on_faq_when_allowed(): void
+    {
+        $forum = new Forum();
+        $forum->status = 'active';
+        $forum->type = 'faq';
+        $forum->allow_member_replies = 1;
+
+        $topic = new Topic();
+        $topic->status = 'published';
+        $topic->is_locked = 0;
+
+        $user = new User();
+        $user->id = 1;
+        $user->name = 'Member';
+        $user->email = 'm@example.com';
+        $user->role = Role::User->value;
+
+        $auth = new Auth(new Session());
+        $auth->login($user);
+
+        $this->assertTrue($this->permissions->canReply($forum, $topic, $auth));
     }
 
     public function test_member_can_create_in_general(): void

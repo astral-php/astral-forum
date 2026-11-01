@@ -65,6 +65,11 @@ return function (Router $router): void {
         $r->get('/account/faq-proposals', FaqProposalController::class, 'index');
         $r->get('/account/faq-proposals/:id', FaqProposalController::class, 'show');
         $r->post('/account/faq-proposals/:id/withdraw', FaqProposalController::class, 'withdraw');
+        $r->get('/account/faq-proposals/:id/resubmit', FaqProposalController::class, 'resubmitForm');
+        $r->post('/account/faq-proposals/:id/resubmit', FaqProposalController::class, 'resubmit');
+
+        $r->post('/topics/:id/subscribe', TopicController::class, 'subscribe');
+        $r->post('/topics/:id/unsubscribe', TopicController::class, 'unsubscribe');
     }, [AuthMiddleware::class]);
 
     $router->group('', function (Router $r): void {

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controllers\Admin;
 
 use App\Dao\ForumDao;
+use App\Services\ForumCatalogService;
 use App\Support\Slug;
-use Astral\Cache\CacheRepository;
 use Controller\AbstractController;
 use Core\Auth\Auth;
 use Core\Exception\NotFoundException;
@@ -24,7 +24,7 @@ final class ForumAdminController extends AbstractController
         private Session $session,
         private Auth $auth,
         private ForumDao $forumDao,
-        private CacheRepository $cache,
+        private ForumCatalogService $catalog,
     ) {
         parent::__construct($view);
     }
@@ -69,6 +69,10 @@ final class ForumAdminController extends AbstractController
         $name = trim((string) $post['name']);
         $slug = Slug::unique($name, fn (string $s): bool => $this->forumDao->slugExists($s));
 
+        $allowReplies = $type === 'faq'
+            ? (isset($post['allow_member_replies']) ? 1 : 0)
+            : 1;
+
         $this->forumDao->insert([
             'name'        => $name,
             'slug'        => $slug,
@@ -76,12 +80,13 @@ final class ForumAdminController extends AbstractController
             'type'        => $type,
             'status'      => 'active',
             'position'    => (int) ($post['position'] ?? 10),
+            'allow_member_replies' => $allowReplies,
             'created_by'  => (int) $this->auth->id(),
             'created_at'  => $now,
             'updated_at'  => $now,
         ]);
 
-        $this->cache->forget('forums.public_active');
+        $this->catalog->forgetPublicList();
         $this->session->flash('success', 'Forum créé.');
 
         return $this->redirect('/admin/forums');
@@ -105,10 +110,11 @@ final class ForumAdminController extends AbstractController
             'name'        => $name,
             'description' => trim((string) ($post['description'] ?? '')) ?: null,
             'position'    => (int) ($post['position'] ?? $forum->position),
+            'allow_member_replies' => isset($post['allow_member_replies']) ? 1 : 0,
             'updated_at'  => date('Y-m-d H:i:s'),
         ]);
 
-        $this->cache->forget('forums.public_active');
+        $this->catalog->forgetPublicList();
         $this->session->flash('success', 'Forum mis à jour.');
 
         return $this->redirect('/admin/forums');
@@ -133,7 +139,7 @@ final class ForumAdminController extends AbstractController
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
-        $this->cache->forget('forums.public_active');
+        $this->catalog->forgetPublicList();
         $this->session->flash('success', 'Forum archivé.');
 
         return $this->redirect('/admin/forums');

@@ -3,7 +3,7 @@
 Forum **create-project** (starter **2.1** + astral-core **^2.1**) : forums, sujets, posts, FAQ modérée.
 
 [![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)](https://www.php.net)
-[![Version](https://img.shields.io/badge/version-0.3.0-blue)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.4.0-blue)](./CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![Tests](https://img.shields.io/badge/tests-PHPUnit%20OK-9933CC)](./phpunit.xml)
 
@@ -22,7 +22,7 @@ Forum **create-project** (starter **2.1** + astral-core **^2.1**) : forums, suje
 ## Installation
 
 ```bash
-composer create-project astral-php/astral-forum:^0.3 mon-forum
+composer create-project astral-php/astral-forum:^0.4 mon-forum
 cd mon-forum
 cp .env.example .env
 php bin/console migrate
@@ -39,16 +39,15 @@ Ouvrir **http://astral-forum.local/** (ou configurer le vhost) → `/register` (
 
 `composer serve` (127.0.0.1:8083) = secours hors Laragon.
 
-## Fonctionnalités 0.3.0
+## Fonctionnalités 0.4.0
 
 - Forum général seedé à la migration
 - Lecture publique, création sujet + réponse (membres)
-- Recherche sujets / messages (`/search`)
-- Édition / soft-delete des messages (fenêtre auteur + modo/admin)
-- Throttle sujet / réponse / FAQ (auth-extra)
+- Recherche, compteurs réponses/vues, cache liste forums
+- Abonnements + e-mail sync sur réponse
+- FAQ configurable (réponses membres) + resoumission après rejet
+- Édition / soft-delete ; throttle auth-extra
 - Rôles : Admin · Modérateur · User · Guest
-- Forums specialized / faq (admin)
-- Workflow FAQ + publication atomique
 - Modération : lock / pin / hide (admin + modérateur)
 
 ## Tests

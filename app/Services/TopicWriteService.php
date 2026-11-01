@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Dao\ForumDao;
 use App\Dao\PostDao;
 use App\Dao\TopicDao;
+use App\Dao\TopicSubscriptionDao;
 use App\Models\Forum;
 use App\Models\Topic;
 use App\Support\Slug;
@@ -27,6 +28,9 @@ final class TopicWriteService
         private TopicDao $topicDao,
         private PostDao $postDao,
         private ForumPermissionService $permissions,
+        private TopicSubscriptionDao $subscriptions,
+        private TopicNotificationService $notifications,
+        private bool $autoSubscribe = true,
     ) {
     }
 
@@ -46,42 +50,49 @@ final class TopicWriteService
 
         $now = date('Y-m-d H:i:s');
         $slug = Slug::unique($title, fn (string $s): bool => $this->topicDao->slugExistsInForum($forum->id, $s));
+        $userId = (int) $auth->id();
 
         $this->pdo->beginTransaction();
         try {
             $topicId = $this->topicDao->insert([
-                'forum_id'     => $forum->id,
-                'user_id'      => (int) $auth->id(),
-                'first_post_id'=> null,
-                'title'        => $title,
-                'slug'         => $slug,
-                'status'       => 'published',
-                'is_pinned'    => 0,
-                'is_locked'    => 0,
+                'forum_id' => $forum->id,
+                'user_id' => $userId,
+                'first_post_id' => null,
+                'title' => $title,
+                'slug' => $slug,
+                'status' => 'published',
+                'is_pinned' => 0,
+                'is_locked' => 0,
+                'reply_count' => 0,
+                'view_count' => 0,
                 'last_post_at' => $now,
-                'created_at'   => $now,
-                'updated_at'   => $now,
+                'created_at' => $now,
+                'updated_at' => $now,
             ]);
 
             $postId = $this->postDao->insert([
-                'topic_id'   => $topicId,
-                'user_id'    => (int) $auth->id(),
-                'content'    => $content,
-                'status'     => 'published',
+                'topic_id' => $topicId,
+                'user_id' => $userId,
+                'content' => $content,
+                'status' => 'published',
                 'created_at' => $now,
                 'updated_at' => $now,
-                'edited_at'  => null,
+                'edited_at' => null,
             ]);
 
             $this->topicDao->update($topicId, [
                 'first_post_id' => $postId,
-                'updated_at'    => $now,
+                'updated_at' => $now,
             ]);
 
             $this->pdo->commit();
         } catch (\Throwable $e) {
             $this->pdo->rollBack();
             throw $e;
+        }
+
+        if ($this->autoSubscribe) {
+            $this->subscriptions->subscribe($topicId, $userId);
         }
 
         /** @var Topic $topic */
@@ -109,28 +120,37 @@ final class TopicWriteService
         }
 
         $now = date('Y-m-d H:i:s');
+        $userId = (int) $auth->id();
+
         $this->pdo->beginTransaction();
         try {
             $this->postDao->insert([
-                'topic_id'   => $topic->id,
-                'user_id'    => (int) $auth->id(),
-                'content'    => $content,
-                'status'     => 'published',
+                'topic_id' => $topic->id,
+                'user_id' => $userId,
+                'content' => $content,
+                'status' => 'published',
                 'created_at' => $now,
                 'updated_at' => $now,
-                'edited_at'  => null,
+                'edited_at' => null,
             ]);
 
             $this->topicDao->update($topic->id, [
                 'last_post_at' => $now,
-                'updated_at'   => $now,
+                'updated_at' => $now,
             ]);
+            $this->topicDao->incrementReplyCount($topic->id);
 
             $this->pdo->commit();
         } catch (\Throwable $e) {
             $this->pdo->rollBack();
             throw $e;
         }
+
+        if ($this->autoSubscribe) {
+            $this->subscriptions->subscribe($topic->id, $userId);
+        }
+
+        $this->notifications->notifyNewReply($topic, $forum, $userId, $content);
 
         /** @var Topic */
         return $this->topicDao->findById($topic->id);
@@ -147,34 +167,37 @@ final class TopicWriteService
 
         $now = date('Y-m-d H:i:s');
         $slug = Slug::unique($title, fn (string $s): bool => $this->topicDao->slugExistsInForum($forum->id, $s));
+        $locked = $forum->isFaq() && !$forum->allowsMemberReplies() ? 1 : 0;
 
         $topicId = $this->topicDao->insert([
-            'forum_id'      => $forum->id,
-            'user_id'       => $userId,
+            'forum_id' => $forum->id,
+            'user_id' => $userId,
             'first_post_id' => null,
-            'title'         => $title,
-            'slug'          => $slug,
-            'status'        => 'published',
-            'is_pinned'     => 0,
-            'is_locked'     => 1,
-            'last_post_at'  => $now,
-            'created_at'    => $now,
-            'updated_at'    => $now,
+            'title' => $title,
+            'slug' => $slug,
+            'status' => 'published',
+            'is_pinned' => 0,
+            'is_locked' => $locked,
+            'reply_count' => 0,
+            'view_count' => 0,
+            'last_post_at' => $now,
+            'created_at' => $now,
+            'updated_at' => $now,
         ]);
 
         $postId = $this->postDao->insert([
-            'topic_id'   => $topicId,
-            'user_id'    => $userId,
-            'content'    => $content,
-            'status'     => 'published',
+            'topic_id' => $topicId,
+            'user_id' => $userId,
+            'content' => $content,
+            'status' => 'published',
             'created_at' => $now,
             'updated_at' => $now,
-            'edited_at'  => null,
+            'edited_at' => null,
         ]);
 
         $this->topicDao->update($topicId, [
             'first_post_id' => $postId,
-            'updated_at'    => $now,
+            'updated_at' => $now,
         ]);
 
         /** @var Topic */

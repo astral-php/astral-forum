@@ -13,6 +13,8 @@ final class Forum
     public string $type = 'general';
     public string $status = 'active';
     public int $position = 0;
+    /** 1 = les membres peuvent répondre (utile pour FAQ configurable). */
+    public int|bool $allow_member_replies = 1;
     public ?int $created_by = null;
     public string $created_at = '';
     public string $updated_at = '';
@@ -20,6 +22,11 @@ final class Forum
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    public function allowsMemberReplies(): bool
+    {
+        return (bool) $this->allow_member_replies;
     }
 
     public function isGeneral(): bool

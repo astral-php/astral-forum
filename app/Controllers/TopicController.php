@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Dao\ForumDao;
 use App\Dao\PostDao;
 use App\Dao\TopicDao;
+use App\Dao\TopicSubscriptionDao;
 use App\Dao\UserDao;
 use App\Services\ActionThrottler;
 use App\Services\ForumPermissionService;
@@ -34,6 +35,7 @@ final class TopicController extends AbstractController
         private ForumPermissionService $permissions,
         private TopicWriteService $topicWrite,
         private ActionThrottler $throttler,
+        private TopicSubscriptionDao $subscriptions,
     ) {
         parent::__construct($view);
     }
@@ -50,6 +52,10 @@ final class TopicController extends AbstractController
             throw new NotFoundException('Sujet introuvable.');
         }
 
+        $this->trackView($topic->id);
+        /** @var \App\Models\Topic $topic */
+        $topic = $this->topicDao->findById($topic->id);
+
         $posts = $this->postDao->findPublishedByTopic($topic->id);
         $authors = [];
         $canEdit = [];
@@ -63,18 +69,24 @@ final class TopicController extends AbstractController
                 && $topic->first_post_id !== $post->id;
         }
 
+        $subscribed = false;
+        if ($this->auth->check()) {
+            $subscribed = $this->subscriptions->isSubscribed($topic->id, (int) $this->auth->id());
+        }
+
         return $this->render('topics/show', [
-            'title'     => $topic->title,
-            'forum'     => $forum,
-            'topic'     => $topic,
-            'posts'     => $posts,
-            'authors'   => $authors,
-            'canReply'  => $this->permissions->canReply($forum, $topic, $this->auth),
+            'title' => $topic->title,
+            'forum' => $forum,
+            'topic' => $topic,
+            'posts' => $posts,
+            'authors' => $authors,
+            'canReply' => $this->permissions->canReply($forum, $topic, $this->auth),
             'canModerate' => $this->permissions->canModerate($this->auth),
-            'canEdit'   => $canEdit,
+            'canEdit' => $canEdit,
             'canSoftDelete' => $canSoftDelete,
-            'errors'    => [],
-            'old'       => [],
+            'subscribed' => $subscribed,
+            'errors' => [],
+            'old' => [],
         ]);
     }
 
@@ -90,10 +102,10 @@ final class TopicController extends AbstractController
         }
 
         return $this->render('topics/create', [
-            'title'  => 'Nouveau sujet',
-            'forum'  => $forum,
+            'title' => 'Nouveau sujet',
+            'forum' => $forum,
             'errors' => [],
-            'old'    => [],
+            'old' => [],
         ]);
     }
 
@@ -109,27 +121,27 @@ final class TopicController extends AbstractController
             $wait = $this->throttler->availableIn('topic', $userId);
 
             return $this->render('topics/create', [
-                'title'  => 'Nouveau sujet',
-                'forum'  => $forum,
+                'title' => 'Nouveau sujet',
+                'forum' => $forum,
                 'errors' => ['title' => [
                     sprintf('Trop de sujets créés. Réessayez dans %d s.', $wait),
                 ]],
-                'old'    => $this->request->post(),
+                'old' => $this->request->post(),
             ]);
         }
 
         $post = $this->request->post();
         $v = $this->validate($post, [
-            'title'   => 'required|min:3|max:240',
+            'title' => 'required|min:3|max:240',
             'content' => 'required|min:3|max:20000',
         ]);
 
         if ($v->fails()) {
             return $this->render('topics/create', [
-                'title'  => 'Nouveau sujet',
-                'forum'  => $forum,
+                'title' => 'Nouveau sujet',
+                'forum' => $forum,
                 'errors' => $v->errors(),
-                'old'    => $post,
+                'old' => $post,
             ]);
         }
 
@@ -143,10 +155,10 @@ final class TopicController extends AbstractController
             $this->throttler->hit('topic', $userId);
         } catch (AuthorizationException $e) {
             return $this->render('topics/create', [
-                'title'  => 'Nouveau sujet',
-                'forum'  => $forum,
+                'title' => 'Nouveau sujet',
+                'forum' => $forum,
                 'errors' => ['title' => [$e->getMessage()]],
-                'old'    => $post,
+                'old' => $post,
             ]);
         }
 
@@ -155,6 +167,65 @@ final class TopicController extends AbstractController
         return $this->redirect(
             '/forums/' . rawurlencode($result['forum']->slug)
             . '/topics/' . rawurlencode($result['topic']->slug)
+        );
+    }
+
+    public function subscribe(string $id): Response
+    {
+        $topic = $this->requirePublishedTopic((int) $id);
+        $this->subscriptions->subscribe($topic->id, (int) $this->auth->id());
+        $this->session->flash('success', 'Abonnement activé — e-mail à chaque réponse.');
+
+        return $this->redirectToTopic($topic);
+    }
+
+    public function unsubscribe(string $id): Response
+    {
+        $topic = $this->requirePublishedTopic((int) $id);
+        $this->subscriptions->unsubscribe($topic->id, (int) $this->auth->id());
+        $this->session->flash('success', 'Abonnement retiré.');
+
+        return $this->redirectToTopic($topic);
+    }
+
+    private function trackView(int $topicId): void
+    {
+        /** @var list<int> $seen */
+        $seen = $this->session->get('viewed_topics', []);
+        if (!is_array($seen)) {
+            $seen = [];
+        }
+        if (in_array($topicId, $seen, true)) {
+            return;
+        }
+
+        $this->topicDao->incrementViewCount($topicId);
+        $seen[] = $topicId;
+        $this->session->set('viewed_topics', $seen);
+    }
+
+    private function requirePublishedTopic(int $topicId): \App\Models\Topic
+    {
+        /** @var \App\Models\Topic|null $topic */
+        $topic = $this->topicDao->findById($topicId);
+        if ($topic === null || !$topic->isPublished()) {
+            throw new NotFoundException('Sujet introuvable.');
+        }
+
+        return $topic;
+    }
+
+    private function redirectToTopic(\App\Models\Topic $topic): Response
+    {
+        /** @var \App\Models\Forum|null $forum */
+        $forum = $this->forumDao->findById($topic->forum_id);
+        if ($forum === null) {
+            return $this->redirect('/forums');
+        }
+
+        return $this->redirect(
+            '/forums/' . rawurlencode($forum->slug)
+            . '/topics/' . rawurlencode($topic->slug)
         );
     }
 }

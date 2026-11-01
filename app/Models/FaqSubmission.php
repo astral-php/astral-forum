@@ -32,4 +32,9 @@ final class FaqSubmission
     {
         return in_array($this->status, ['pending', 'changes_requested'], true);
     }
+
+    public function canResubmit(): bool
+    {
+        return $this->status === 'rejected';
+    }
 }

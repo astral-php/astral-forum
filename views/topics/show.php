@@ -7,8 +7,10 @@
 /** @var bool $canModerate */
 /** @var array<int, bool> $canEdit */
 /** @var array<int, bool> $canSoftDelete */
+/** @var bool $subscribed */
 $canEdit = $canEdit ?? [];
 $canSoftDelete = $canSoftDelete ?? [];
+$subscribed = $subscribed ?? false;
 ?>
 <section>
     <p style="margin:0 0 0.35rem">
@@ -17,11 +19,29 @@ $canSoftDelete = $canSoftDelete ?? [];
     <h1 style="font-family:Fraunces,Georgia,serif;font-size:1.65rem;margin:0 0 0.5rem">
         <?= htmlspecialchars($topic->title, ENT_QUOTES, 'UTF-8') ?>
     </h1>
-    <p style="color:var(--muted);font-size:0.85rem;margin:0 0 1.25rem">
+    <p style="color:var(--muted);font-size:0.85rem;margin:0 0 1rem">
         <?php if ($topic->isLocked()): ?>Verrouillé · <?php endif ?>
         <?php if ($topic->isPinned()): ?>Épinglé · <?php endif ?>
-        <?= htmlspecialchars($topic->created_at, ENT_QUOTES, 'UTF-8') ?>
+        <?= (int) $topic->reply_count ?> réponse<?= (int) $topic->reply_count > 1 ? 's' : '' ?>
+        · <?= (int) $topic->view_count ?> vue<?= (int) $topic->view_count > 1 ? 's' : '' ?>
+        · <?= htmlspecialchars($topic->created_at, ENT_QUOTES, 'UTF-8') ?>
     </p>
+
+    <?php if ($auth->check()): ?>
+        <div style="margin-bottom:1.25rem">
+            <?php if ($subscribed): ?>
+                <form method="POST" action="/topics/<?= (int) $topic->id ?>/unsubscribe" style="display:inline">
+                    <?= $csrf->field() ?>
+                    <button type="submit" class="btn btn-ghost">Se désabonner</button>
+                </form>
+            <?php else: ?>
+                <form method="POST" action="/topics/<?= (int) $topic->id ?>/subscribe" style="display:inline">
+                    <?= $csrf->field() ?>
+                    <button type="submit" class="btn btn-ghost">S’abonner (e-mail)</button>
+                </form>
+            <?php endif ?>
+        </div>
+    <?php endif ?>
 
     <?php if ($canModerate): ?>
         <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.25rem">
@@ -41,7 +61,11 @@ $canSoftDelete = $canSoftDelete ?? [];
             <?php $author = $authors[$post->user_id] ?? null; ?>
             <article style="background:var(--panel);border:1px solid var(--line);border-radius:0.85rem;padding:1rem 1.15rem">
                 <header style="font-size:0.8rem;color:var(--muted);margin-bottom:0.5rem">
-                    <?= htmlspecialchars($author?->name ?? ('#' . $post->user_id), ENT_QUOTES, 'UTF-8') ?>
+                    <?php if ($author !== null): ?>
+                        <a href="/users/<?= (int) $author->id ?>"><?= htmlspecialchars($author->name, ENT_QUOTES, 'UTF-8') ?></a>
+                    <?php else: ?>
+                        #<?= (int) $post->user_id ?>
+                    <?php endif ?>
                     · <?= htmlspecialchars($post->created_at, ENT_QUOTES, 'UTF-8') ?>
                     <?php if ($post->wasEdited()): ?>
                         · modifié <?= htmlspecialchars((string) $post->edited_at, ENT_QUOTES, 'UTF-8') ?>

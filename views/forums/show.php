@@ -29,6 +29,9 @@
                     <a href="/forums/<?= htmlspecialchars($forum->slug, ENT_QUOTES, 'UTF-8') ?>/topics/<?= htmlspecialchars($topic->slug, ENT_QUOTES, 'UTF-8') ?>">
                         <?= htmlspecialchars($topic->title, ENT_QUOTES, 'UTF-8') ?>
                     </a>
+                    <span style="font-size:0.75rem;color:var(--muted);margin-left:auto">
+                        <?= (int) $topic->reply_count ?> rép. · <?= (int) $topic->view_count ?> vues
+                    </span>
                     <?php if ($topic->isLocked()): ?>
                         <span style="font-size:0.75rem;color:var(--muted)">🔒</span>
                     <?php endif ?>

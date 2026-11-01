@@ -23,7 +23,7 @@ final class FaqWorkflowService
         'changes_requested' => ['pending', 'under_review', 'rejected'],
         'approved'          => ['published'],
         'published'         => [],
-        'rejected'          => [],
+        'rejected'          => ['pending'],
     ];
 
     public function __construct(
@@ -68,6 +68,39 @@ final class FaqWorkflowService
         }
 
         $this->faqDao->delete($submission->id);
+    }
+
+    /**
+     * Resoumission après rejet (auteur) — repasse en pending.
+     */
+    public function resubmit(int $id, string $title, string $description, Auth $auth): FaqSubmission
+    {
+        $submission = $this->requireOwned($id, $auth);
+        if (!$submission->canResubmit()) {
+            throw new InvalidArgumentException('Seules les propositions rejetées peuvent être resoumises.');
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $this->faqDao->update($submission->id, [
+            'title' => $title,
+            'description' => $description,
+            'status' => 'pending',
+            'reviewed_by' => null,
+            'reviewed_at' => null,
+            'review_note' => null,
+            'updated_at' => $now,
+        ]);
+
+        $this->logDao->log(
+            (int) $auth->id(),
+            'faq.resubmit',
+            'faq_submission',
+            $submission->id,
+            null,
+        );
+
+        /** @var FaqSubmission */
+        return $this->faqDao->findById($submission->id);
     }
 
     public function transition(int $id, string $toStatus, Auth $auth, ?string $note = null): FaqSubmission

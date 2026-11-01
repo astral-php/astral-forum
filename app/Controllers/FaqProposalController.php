@@ -110,4 +110,63 @@ final class FaqProposalController extends AbstractController
 
         return $this->redirect('/account/faq-proposals');
     }
+
+    public function resubmitForm(string $id): Response
+    {
+        /** @var \App\Models\FaqSubmission|null $submission */
+        $submission = $this->faqDao->findById((int) $id);
+        if ($submission === null || $submission->user_id !== (int) $this->auth->id()) {
+            throw new NotFoundException('Proposition introuvable.');
+        }
+        if (!$submission->canResubmit()) {
+            $this->session->flash('error', 'Cette proposition ne peut pas être resoumise.');
+
+            return $this->redirect('/account/faq-proposals/' . $submission->id);
+        }
+
+        return $this->render('faq/resubmit', [
+            'title' => 'Resoumettre la FAQ',
+            'submission' => $submission,
+            'errors' => [],
+            'old' => [
+                'title' => $submission->title,
+                'description' => $submission->description,
+            ],
+        ]);
+    }
+
+    public function resubmit(string $id): Response
+    {
+        $post = $this->request->post();
+        $v = $this->validate($post, [
+            'title' => 'required|min:5|max:240',
+            'description' => 'required|min:10|max:20000',
+        ]);
+
+        /** @var \App\Models\FaqSubmission|null $submission */
+        $submission = $this->faqDao->findById((int) $id);
+        if ($submission === null || $submission->user_id !== (int) $this->auth->id()) {
+            throw new NotFoundException('Proposition introuvable.');
+        }
+
+        if ($v->fails()) {
+            return $this->render('faq/resubmit', [
+                'title' => 'Resoumettre la FAQ',
+                'submission' => $submission,
+                'errors' => $v->errors(),
+                'old' => $post,
+            ]);
+        }
+
+        $updated = $this->workflow->resubmit(
+            (int) $id,
+            trim((string) $post['title']),
+            trim((string) $post['description']),
+            $this->auth,
+        );
+
+        $this->session->flash('success', 'Proposition renvoyée en revue.');
+
+        return $this->redirect('/account/faq-proposals/' . $updated->id);
+    }
 }
