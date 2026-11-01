@@ -9,3 +9,6 @@
 /.phpunit.result.cache
 composer.lock
 .vscode/
+
+/public/storage/cache/
+/storage/cache/
