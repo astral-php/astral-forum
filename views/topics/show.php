@@ -5,6 +5,10 @@
 /** @var array<int, \App\Models\User|null> $authors */
 /** @var bool $canReply */
 /** @var bool $canModerate */
+/** @var array<int, bool> $canEdit */
+/** @var array<int, bool> $canSoftDelete */
+$canEdit = $canEdit ?? [];
+$canSoftDelete = $canSoftDelete ?? [];
 ?>
 <section>
     <p style="margin:0 0 0.35rem">
@@ -39,6 +43,19 @@
                 <header style="font-size:0.8rem;color:var(--muted);margin-bottom:0.5rem">
                     <?= htmlspecialchars($author?->name ?? ('#' . $post->user_id), ENT_QUOTES, 'UTF-8') ?>
                     · <?= htmlspecialchars($post->created_at, ENT_QUOTES, 'UTF-8') ?>
+                    <?php if ($post->wasEdited()): ?>
+                        · modifié <?= htmlspecialchars((string) $post->edited_at, ENT_QUOTES, 'UTF-8') ?>
+                    <?php endif ?>
+                    <?php if (!empty($canEdit[$post->id])): ?>
+                        <a href="/posts/<?= (int) $post->id ?>/edit" style="margin-left:0.5rem">Modifier</a>
+                    <?php endif ?>
+                    <?php if (!empty($canSoftDelete[$post->id])): ?>
+                        <form method="POST" action="/posts/<?= (int) $post->id ?>/delete" style="display:inline;margin-left:0.5rem"
+                              onsubmit="return confirm('Supprimer ce message ?');">
+                            <?= $csrf->field() ?>
+                            <button type="submit" class="link-quiet" style="background:none;border:0;cursor:pointer;padding:0;color:var(--muted)">Supprimer</button>
+                        </form>
+                    <?php endif ?>
                     <?php if ($canModerate): ?>
                         <form method="POST" action="/admin/posts/<?= (int) $post->id ?>/hide" style="display:inline;margin-left:0.5rem">
                             <?= $csrf->field() ?>

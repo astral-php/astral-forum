@@ -19,4 +19,14 @@ final class Post
     {
         return $this->status === 'published';
     }
+
+    public function isDeleted(): bool
+    {
+        return $this->status === 'deleted';
+    }
+
+    public function wasEdited(): bool
+    {
+        return $this->edited_at !== null && $this->edited_at !== '';
+    }
 }

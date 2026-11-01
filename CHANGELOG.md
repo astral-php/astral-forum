@@ -9,6 +9,19 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 Voir [ROADMAP.md](./ROADMAP.md) pour le chemin vers **1.0.0**.
 
+## [0.2.0] - 2026-11-01
+
+### Ajouté
+
+- Édition des messages (auteur dans la fenêtre configurable, admin illimité) + marqueur `edited_at`.
+- Soft-delete auteur (`status=deleted`) ; premier message protégé (admin : hide).
+- Throttle écriture via **astral-auth-extra** : sujet / réponse / proposition FAQ (`ActionThrottler` + `CacheThrottleStore`).
+- Config `forum.edit_window_minutes` et `forum.throttle.*` ; provider `AuthExtraServiceProvider`.
+
+### Dépendances
+
+- `astral-php/astral-auth-extra:^0.2`
+
 ## [0.1.2] - 2026-10-31
 
 ### Corrigé

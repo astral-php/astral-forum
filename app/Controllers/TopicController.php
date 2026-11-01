@@ -8,6 +8,7 @@ use App\Dao\ForumDao;
 use App\Dao\PostDao;
 use App\Dao\TopicDao;
 use App\Dao\UserDao;
+use App\Services\ActionThrottler;
 use App\Services\ForumPermissionService;
 use App\Services\TopicWriteService;
 use Controller\AbstractController;
@@ -32,6 +33,7 @@ final class TopicController extends AbstractController
         private UserDao $userDao,
         private ForumPermissionService $permissions,
         private TopicWriteService $topicWrite,
+        private ActionThrottler $throttler,
     ) {
         parent::__construct($view);
     }
@@ -50,10 +52,15 @@ final class TopicController extends AbstractController
 
         $posts = $this->postDao->findPublishedByTopic($topic->id);
         $authors = [];
+        $canEdit = [];
+        $canSoftDelete = [];
         foreach ($posts as $post) {
             if (!isset($authors[$post->user_id])) {
                 $authors[$post->user_id] = $this->userDao->findById($post->user_id);
             }
+            $canEdit[$post->id] = $this->permissions->canEditPost($post, $this->auth);
+            $canSoftDelete[$post->id] = $this->permissions->canSoftDeletePost($post, $this->auth)
+                && $topic->first_post_id !== $post->id;
         }
 
         return $this->render('topics/show', [
@@ -64,6 +71,8 @@ final class TopicController extends AbstractController
             'authors'   => $authors,
             'canReply'  => $this->permissions->canReply($forum, $topic, $this->auth),
             'canModerate' => $this->permissions->canModerate($this->auth),
+            'canEdit'   => $canEdit,
+            'canSoftDelete' => $canSoftDelete,
             'errors'    => [],
             'old'       => [],
         ]);
@@ -95,6 +104,20 @@ final class TopicController extends AbstractController
             throw new NotFoundException('Forum introuvable.');
         }
 
+        $userId = (int) $this->auth->id();
+        if ($this->throttler->tooManyAttempts('topic', $userId)) {
+            $wait = $this->throttler->availableIn('topic', $userId);
+
+            return $this->render('topics/create', [
+                'title'  => 'Nouveau sujet',
+                'forum'  => $forum,
+                'errors' => ['title' => [
+                    sprintf('Trop de sujets créés. Réessayez dans %d s.', $wait),
+                ]],
+                'old'    => $this->request->post(),
+            ]);
+        }
+
         $post = $this->request->post();
         $v = $this->validate($post, [
             'title'   => 'required|min:3|max:240',
@@ -110,12 +133,22 @@ final class TopicController extends AbstractController
             ]);
         }
 
-        $result = $this->topicWrite->createTopic(
-            $forum->slug,
-            trim((string) $post['title']),
-            trim((string) $post['content']),
-            $this->auth,
-        );
+        try {
+            $result = $this->topicWrite->createTopic(
+                $forum->slug,
+                trim((string) $post['title']),
+                trim((string) $post['content']),
+                $this->auth,
+            );
+            $this->throttler->hit('topic', $userId);
+        } catch (AuthorizationException $e) {
+            return $this->render('topics/create', [
+                'title'  => 'Nouveau sujet',
+                'forum'  => $forum,
+                'errors' => ['title' => [$e->getMessage()]],
+                'old'    => $post,
+            ]);
+        }
 
         $this->session->flash('success', 'Sujet publié.');
 

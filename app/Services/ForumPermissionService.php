@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Forum;
+use App\Models\Post;
 use App\Models\Topic;
 use Core\Auth\Auth;
 use Core\Auth\Role;
 
 final class ForumPermissionService
 {
+    public function __construct(
+        private int $editWindowMinutes = 30,
+    ) {
+    }
+
     public function canCreateTopic(Forum $forum, Auth $auth): bool
     {
         if (!$auth->check() || !$forum->isActive()) {
@@ -50,5 +56,46 @@ final class ForumPermissionService
     public function canReviewFaq(Auth $auth): bool
     {
         return $this->canModerate($auth);
+    }
+
+    public function canEditPost(Post $post, Auth $auth): bool
+    {
+        if (!$auth->check() || !$post->isPublished()) {
+            return false;
+        }
+
+        if ($this->canModerate($auth)) {
+            return true;
+        }
+
+        if ((int) $auth->id() !== $post->user_id) {
+            return false;
+        }
+
+        return $this->withinEditWindow($post);
+    }
+
+    public function canSoftDeletePost(Post $post, Auth $auth): bool
+    {
+        return $this->canEditPost($post, $auth);
+    }
+
+    public function editWindowMinutes(): int
+    {
+        return $this->editWindowMinutes;
+    }
+
+    private function withinEditWindow(Post $post): bool
+    {
+        if ($this->editWindowMinutes <= 0) {
+            return true;
+        }
+
+        $created = strtotime($post->created_at);
+        if ($created === false) {
+            return false;
+        }
+
+        return (time() - $created) <= ($this->editWindowMinutes * 60);
     }
 }

@@ -53,6 +53,9 @@ return function (Router $router): void {
         $r->post('/profile/password', ProfileController::class, 'updatePassword');
 
         $r->post('/topics/:id/posts', PostController::class, 'store');
+        $r->get('/posts/:id/edit', PostController::class, 'editForm');
+        $r->post('/posts/:id', PostController::class, 'update');
+        $r->post('/posts/:id/delete', PostController::class, 'destroy');
 
         $r->get('/faq/proposals/create', FaqProposalController::class, 'createForm');
         $r->post('/faq/proposals', FaqProposalController::class, 'store');

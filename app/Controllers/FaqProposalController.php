@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Dao\FaqSubmissionDao;
+use App\Services\ActionThrottler;
 use App\Services\FaqWorkflowService;
 use Controller\AbstractController;
 use Core\Auth\Auth;
@@ -23,6 +24,7 @@ final class FaqProposalController extends AbstractController
         private Auth $auth,
         private FaqSubmissionDao $faqDao,
         private FaqWorkflowService $workflow,
+        private ActionThrottler $throttler,
     ) {
         parent::__construct($view);
     }
@@ -38,6 +40,19 @@ final class FaqProposalController extends AbstractController
 
     public function store(): Response
     {
+        $userId = (int) $this->auth->id();
+        if ($this->throttler->tooManyAttempts('faq', $userId)) {
+            $wait = $this->throttler->availableIn('faq', $userId);
+
+            return $this->render('faq/create', [
+                'title'  => 'Proposer une FAQ',
+                'errors' => ['title' => [
+                    sprintf('Trop de propositions. Réessayez dans %d s.', $wait),
+                ]],
+                'old'    => $this->request->post(),
+            ]);
+        }
+
         $post = $this->request->post();
         $v = $this->validate($post, [
             'title'       => 'required|min:5|max:240',
@@ -57,6 +72,7 @@ final class FaqProposalController extends AbstractController
             trim((string) $post['description']),
             $this->auth,
         );
+        $this->throttler->hit('faq', $userId);
 
         $this->session->flash('success', 'Proposition envoyée.');
 

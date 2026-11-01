@@ -28,12 +28,17 @@ use App\Events\UserRegistered;
 use App\Listeners\LogRoleChange;
 use App\Listeners\LogUserActivity;
 use App\Listeners\SendWelcomeEmail;
+use App\Services\ActionThrottler;
 use App\Services\FaqWorkflowService;
 use App\Services\ForumPermissionService;
 use App\Services\ModerationService;
+use App\Services\PostWriteService;
 use App\Services\TopicWriteService;
+use Astral\AuthExtra\Throttle\CacheThrottleStore;
+use Astral\AuthExtra\Throttle\ThrottleStoreInterface;
 use Astral\Cache\CacheRepository;
 use Core\Auth\Auth;
+use Core\Cache;
 use Core\Container;
 use Core\Events\EventDispatcher;
 use Core\Mailer\Mailer;
@@ -74,13 +79,35 @@ final class AppServiceProvider implements ServiceProviderInterface
         $container->singleton(FaqSubmissionDao::class, fn (Container $c) => new FaqSubmissionDao($c->make(PDO::class)));
         $container->singleton(ForumModerationLogDao::class, fn (Container $c) => new ForumModerationLogDao($c->make(PDO::class)));
 
-        $container->singleton(ForumPermissionService::class, fn () => new ForumPermissionService());
+        /** @var array<string, mixed> $forumCfg */
+        $forumCfg = is_array($appConfig['forum'] ?? null) ? $appConfig['forum'] : [];
+        $editWindow = (int) ($forumCfg['edit_window_minutes'] ?? 30);
+        /** @var array<string, array{max?: int, decay?: int}> $throttleLimits */
+        $throttleLimits = is_array($forumCfg['throttle'] ?? null) ? $forumCfg['throttle'] : [];
+
+        $container->singleton(ForumPermissionService::class, fn () => new ForumPermissionService($editWindow));
+
+        $container->singleton(ThrottleStoreInterface::class, fn (Container $c) => new CacheThrottleStore(
+            $c->make(Cache::class),
+        ));
+
+        $container->singleton(ActionThrottler::class, fn (Container $c) => new ActionThrottler(
+            store: $c->make(ThrottleStoreInterface::class),
+            limits: $throttleLimits,
+        ));
 
         $container->singleton(TopicWriteService::class, fn (Container $c) => new TopicWriteService(
             $c->make(PDO::class),
             $c->make(ForumDao::class),
             $c->make(TopicDao::class),
             $c->make(PostDao::class),
+            $c->make(ForumPermissionService::class),
+        ));
+
+        $container->singleton(PostWriteService::class, fn (Container $c) => new PostWriteService(
+            $c->make(PostDao::class),
+            $c->make(TopicDao::class),
+            $c->make(ForumDao::class),
             $c->make(ForumPermissionService::class),
         ));
 
@@ -181,25 +208,30 @@ final class AppServiceProvider implements ServiceProviderInterface
             userDao:     $c->make(UserDao::class),
             permissions: $c->make(ForumPermissionService::class),
             topicWrite:  $c->make(TopicWriteService::class),
+            throttler:   $c->make(ActionThrottler::class),
         ));
 
         $container->bind(PostController::class, fn (Container $c) => new PostController(
-            view:       $c->make(View::class),
-            request:    $c->make(Request::class),
-            session:    $c->make(Session::class),
-            auth:       $c->make(Auth::class),
-            forumDao:   $c->make(ForumDao::class),
-            topicDao:   $c->make(TopicDao::class),
-            topicWrite: $c->make(TopicWriteService::class),
+            view:        $c->make(View::class),
+            request:     $c->make(Request::class),
+            session:     $c->make(Session::class),
+            auth:        $c->make(Auth::class),
+            forumDao:    $c->make(ForumDao::class),
+            topicDao:    $c->make(TopicDao::class),
+            topicWrite:  $c->make(TopicWriteService::class),
+            postWrite:   $c->make(PostWriteService::class),
+            permissions: $c->make(ForumPermissionService::class),
+            throttler:   $c->make(ActionThrottler::class),
         ));
 
         $container->bind(FaqProposalController::class, fn (Container $c) => new FaqProposalController(
-            view:     $c->make(View::class),
-            request:  $c->make(Request::class),
-            session:  $c->make(Session::class),
-            auth:     $c->make(Auth::class),
-            faqDao:   $c->make(FaqSubmissionDao::class),
-            workflow: $c->make(FaqWorkflowService::class),
+            view:      $c->make(View::class),
+            request:   $c->make(Request::class),
+            session:   $c->make(Session::class),
+            auth:      $c->make(Auth::class),
+            faqDao:    $c->make(FaqSubmissionDao::class),
+            workflow:  $c->make(FaqWorkflowService::class),
+            throttler: $c->make(ActionThrottler::class),
         ));
 
         $container->bind(ForumAdminController::class, fn (Container $c) => new ForumAdminController(
