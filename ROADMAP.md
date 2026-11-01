@@ -11,7 +11,8 @@
 | **0.2.0** | Édition / soft-delete posts + throttle (auth-extra) |
 | **0.3.0** | Recherche + rôle Moderateur / permissions |
 | **0.4.0** | Notifications, compteurs/cache, FAQ configurable |
-| **1.0.0** | Tests CI, docs prod, polish UI, politique comptes |
+| **0.5.0** | UI Nova Maroon Light (home + admin shell) |
+| **1.0.0** | Tests CI, docs prod, polish restant, politique comptes |
 
 ## P0 — Indispensable 1.0
 

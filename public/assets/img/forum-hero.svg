@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 390" role="img" aria-labelledby="title desc">
+<title id="title">Illustration de conversations Astral Forum</title><desc id="desc">Bulles de discussion bordeaux et rose représentant une communauté qui échange.</desc>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f6dce5"/><stop offset="1" stop-color="#fff8fa"/></linearGradient><linearGradient id="m" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ad315b"/><stop offset="1" stop-color="#741332"/></linearGradient></defs>
+<circle cx="270" cy="190" r="168" fill="url(#g)"/><circle cx="270" cy="190" r="138" fill="none" stroke="#e8c4d0" stroke-width="1.5" stroke-dasharray="4 8"/>
+<path d="M92 90h210a22 22 0 0 1 22 22v82a22 22 0 0 1-22 22H178l-38 30v-30H92a22 22 0 0 1-22-22v-82a22 22 0 0 1 22-22Z" fill="#fff" stroke="#e9cbd5" stroke-width="2"/>
+<circle cx="112" cy="132" r="7" fill="#a42a52"/><rect x="132" y="125" width="120" height="13" rx="6.5" fill="#e7cbd4"/><rect x="105" y="157" width="165" height="9" rx="4.5" fill="#f0e1e6"/><rect x="105" y="176" width="125" height="9" rx="4.5" fill="#f0e1e6"/>
+<path d="M238 202h185a22 22 0 0 1 22 22v75a22 22 0 0 1-22 22H330l-34 27v-27h-58a22 22 0 0 1-22-22v-75a22 22 0 0 1 22-22Z" fill="url(#m)"/>
+<circle cx="264" cy="239" r="7" fill="#fff"/><rect x="283" y="232" width="111" height="12" rx="6" fill="#f4cbd8" opacity=".95"/><rect x="254" y="263" width="157" height="9" rx="4.5" fill="#fff" opacity=".62"/><rect x="254" y="281" width="113" height="9" rx="4.5" fill="#fff" opacity=".42"/>
+<circle cx="415" cy="92" r="31" fill="#fff" stroke="#e9cbd5" stroke-width="2"/><path d="M402 92h26m-13-13v26" stroke="#9f1239" stroke-width="3" stroke-linecap="round"/>
+<circle cx="101" cy="300" r="19" fill="#f0cbd8"/><circle cx="101" cy="294" r="6" fill="#9f1239"/><path d="M88 310c2-9 24-9 26 0" fill="#9f1239"/>
+<circle cx="441" cy="330" r="12" fill="#e8c4d0"/><circle cx="455" cy="348" r="7" fill="#a42a52"/>
+</svg>

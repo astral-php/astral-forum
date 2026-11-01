@@ -16,16 +16,16 @@ $subscribed = $subscribed ?? false;
     <p style="margin:0 0 0.35rem">
         <a href="/forums/<?= htmlspecialchars($forum->slug, ENT_QUOTES, 'UTF-8') ?>">← <?= htmlspecialchars($forum->name, ENT_QUOTES, 'UTF-8') ?></a>
     </p>
-    <h1 style="font-family:Fraunces,Georgia,serif;font-size:1.65rem;margin:0 0 0.5rem">
-        <?= htmlspecialchars($topic->title, ENT_QUOTES, 'UTF-8') ?>
-    </h1>
-    <p style="color:var(--muted);font-size:0.85rem;margin:0 0 1rem">
-        <?php if ($topic->isLocked()): ?>Verrouillé · <?php endif ?>
-        <?php if ($topic->isPinned()): ?>Épinglé · <?php endif ?>
-        <?= (int) $topic->reply_count ?> réponse<?= (int) $topic->reply_count > 1 ? 's' : '' ?>
-        · <?= (int) $topic->view_count ?> vue<?= (int) $topic->view_count > 1 ? 's' : '' ?>
-        · <?= htmlspecialchars($topic->created_at, ENT_QUOTES, 'UTF-8') ?>
-    </p>
+    <div class="page-intro">
+        <h1><?= htmlspecialchars($topic->title, ENT_QUOTES, 'UTF-8') ?></h1>
+        <p>
+            <?php if ($topic->isLocked()): ?><span class="pill">Verrouillé</span> <?php endif ?>
+            <?php if ($topic->isPinned()): ?><span class="pill">Épinglé</span> <?php endif ?>
+            <?= (int) $topic->reply_count ?> réponse<?= (int) $topic->reply_count > 1 ? 's' : '' ?>
+            · <?= (int) $topic->view_count ?> vue<?= (int) $topic->view_count > 1 ? 's' : '' ?>
+            · <?= htmlspecialchars($topic->created_at, ENT_QUOTES, 'UTF-8') ?>
+        </p>
+    </div>
 
     <?php if ($auth->check()): ?>
         <div style="margin-bottom:1.25rem">
@@ -56,11 +56,11 @@ $subscribed = $subscribed ?? false;
         </div>
     <?php endif ?>
 
-    <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem">
+    <div class="post-stack">
         <?php foreach ($posts as $post): ?>
             <?php $author = $authors[$post->user_id] ?? null; ?>
-            <article style="background:var(--panel);border:1px solid var(--line);border-radius:0.85rem;padding:1rem 1.15rem">
-                <header style="font-size:0.8rem;color:var(--muted);margin-bottom:0.5rem">
+            <article class="post-card">
+                <header>
                     <?php if ($author !== null): ?>
                         <a href="/users/<?= (int) $author->id ?>"><?= htmlspecialchars($author->name, ENT_QUOTES, 'UTF-8') ?></a>
                     <?php else: ?>
@@ -77,24 +77,24 @@ $subscribed = $subscribed ?? false;
                         <form method="POST" action="/posts/<?= (int) $post->id ?>/delete" style="display:inline;margin-left:0.5rem"
                               onsubmit="return confirm('Supprimer ce message ?');">
                             <?= $csrf->field() ?>
-                            <button type="submit" class="link-quiet" style="background:none;border:0;cursor:pointer;padding:0;color:var(--muted)">Supprimer</button>
+                            <button type="submit" class="btn btn-ghost" style="padding:0.2rem 0.6rem;font-size:0.75rem">Supprimer</button>
                         </form>
                     <?php endif ?>
                     <?php if ($canModerate): ?>
                         <form method="POST" action="/admin/posts/<?= (int) $post->id ?>/hide" style="display:inline;margin-left:0.5rem">
                             <?= $csrf->field() ?>
-                            <button type="submit" class="link-quiet" style="background:none;border:0;cursor:pointer;padding:0">Masquer</button>
+                            <button type="submit" class="btn btn-ghost" style="padding:0.2rem 0.6rem;font-size:0.75rem">Masquer</button>
                         </form>
                     <?php endif ?>
                 </header>
-                <div style="white-space:pre-wrap;line-height:1.55"><?= htmlspecialchars($post->content, ENT_QUOTES, 'UTF-8') ?></div>
+                <div class="body"><?= htmlspecialchars($post->content, ENT_QUOTES, 'UTF-8') ?></div>
             </article>
         <?php endforeach ?>
     </div>
 
     <?php if ($canReply): ?>
         <div class="auth-card" style="max-width:100%">
-            <h2 style="font-family:Fraunces,Georgia,serif;font-size:1.2rem;margin:0 0 1rem">Répondre</h2>
+            <h2 style="font-family:Fraunces,Georgia,serif;font-size:1.2rem;margin:0 0 1rem;text-align:left">Répondre</h2>
             <form method="POST" action="/topics/<?= (int) $topic->id ?>/posts" class="form-stack">
                 <?= $csrf->field() ?>
                 <?php if (isset($form)): ?>

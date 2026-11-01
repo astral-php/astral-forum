@@ -1,8 +1,11 @@
 <?php /** @var \App\Models\FaqSubmission $submission */ ?>
 <section>
-    <p><a href="/admin/faq/proposals">← File FAQ</a></p>
-    <h1 style="font-family:Fraunces,Georgia,serif"><?= htmlspecialchars($submission->title, ENT_QUOTES, 'UTF-8') ?></h1>
-    <p style="color:var(--muted)">Statut : <?= htmlspecialchars($submission->status, ENT_QUOTES, 'UTF-8') ?></p>
+    <p style="margin:0 0 1rem"><a href="/admin/faq/proposals">← File FAQ</a></p>
+    <div class="page-intro">
+        <span class="eyebrow">Administration</span>
+        <h1><?= htmlspecialchars($submission->title, ENT_QUOTES, 'UTF-8') ?></h1>
+        <p>Statut : <?= htmlspecialchars($submission->status, ENT_QUOTES, 'UTF-8') ?></p>
+    </div>
     <div style="white-space:pre-wrap;border:1px solid var(--line);border-radius:0.85rem;padding:1rem;margin:1rem 0;background:var(--panel)">
         <?= htmlspecialchars($submission->description, ENT_QUOTES, 'UTF-8') ?>
     </div>

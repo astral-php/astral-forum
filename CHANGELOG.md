@@ -9,6 +9,15 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 Voir [ROADMAP.md](./ROADMAP.md) pour le chemin vers **1.0.0**.
 
+## [0.5.0] - 2026-11-01
+
+### Modifié
+
+- UI **Nova Maroon Light** : home (hero + 4 atouts + split forums/widgets), forums cartes, sujets, recherche.
+- Assets `public/assets/css/forum.css` + `forum-hero.svg`.
+- Nav publique épurée (Accueil / Forums / Recherche / FAQ) ; entrée unique **Administration**.
+- Shell admin (sous-nav Forums · FAQ · Utilisateurs) + pages admin restylées (plus d’indigo starter).
+
 ## [0.4.0] - 2026-11-01
 
 ### Ajouté

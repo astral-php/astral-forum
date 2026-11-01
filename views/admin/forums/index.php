@@ -1,9 +1,13 @@
 <?php /** @var list<\App\Models\Forum> $forums */ ?>
 <section>
-    <h1 style="font-family:Fraunces,Georgia,serif">Admin — Forums</h1>
+    <div class="page-intro">
+        <span class="eyebrow">Administration</span>
+        <h1>Forums</h1>
+        <p>Créer, éditer et archiver les espaces de discussion.</p>
+    </div>
 
-    <div class="auth-card" style="max-width:100%;margin:1.25rem 0">
-        <h2 style="font-size:1.1rem;margin:0 0 1rem">Créer un forum</h2>
+    <div class="auth-card" style="max-width:100%;margin:0 0 1.5rem">
+        <h2 style="font-family:Fraunces,Georgia,serif;font-size:1.15rem;margin:0 0 1rem;text-align:left">Créer un forum</h2>
         <form method="POST" action="/admin/forums" class="form-stack">
             <?= $csrf->field() ?>
             <div class="field">
@@ -29,9 +33,9 @@
         </form>
     </div>
 
-    <ul style="list-style:none;padding:0">
+    <div style="display:flex;flex-direction:column;gap:0.75rem">
         <?php foreach ($forums as $forum): ?>
-            <li style="border:1px solid var(--line);border-radius:0.85rem;padding:1rem;margin-bottom:0.75rem;background:var(--panel)">
+            <article class="post-card">
                 <strong><?= htmlspecialchars($forum->name, ENT_QUOTES, 'UTF-8') ?></strong>
                 <span style="color:var(--muted);font-size:0.85rem">
                     (<?= htmlspecialchars($forum->type, ENT_QUOTES, 'UTF-8') ?> · <?= htmlspecialchars($forum->status, ENT_QUOTES, 'UTF-8') ?>)
@@ -54,7 +58,7 @@
                         <button type="submit" class="btn btn-ghost">Archiver</button>
                     </form>
                 <?php endif ?>
-            </li>
+            </article>
         <?php endforeach ?>
-    </ul>
+    </div>
 </section>
