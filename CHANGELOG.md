@@ -7,7 +7,27 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
-Voir [ROADMAP.md](./ROADMAP.md) pour le chemin vers **1.0.0**.
+### Prochaine phase (post-1.0)
+
+- Markdown assaini + doc utilisateur (sans IA).
+- Polish UI restant (empty states, mobile, breadcrumbs).
+- Seed démo contenu (sujets d’exemple).
+
+## [1.0.0] - 2026-11-01
+
+### Ajouté
+
+- Setup communauté à la **première visite admin** (`/admin/setup`) : nom, tagline, description Forum général (nom figé) ; FAQ alignée sur le thème.
+- Remember-me (auth-extra) + case « Se souvenir de moi ».
+- Anonymisation de compte (`/profile`) — messages conservés.
+- Docs `docs/INSTALL.md` · `docs/FAQ.md` ; CI GitHub Actions.
+- FAQ **modèle rédacteur** : « Rédiger une FAQ » (Sujet + corps) ; admin Publier / complément / refus ; publiée lecture seule.
+- Forum FAQ : pas de badge « Verrouillé » ; hint discret « lecture seule » ; CTA → `/faq/proposals/create` (redirect depuis topics/create).
+- Nav : marge brand ✦ / nom communauté.
+
+### Suite
+
+Markdown, polish UI restant et seed contenu : **prochaine phase** (voir [ROADMAP.md](./ROADMAP.md)).
 
 ## [0.5.1] - 2026-11-01
 

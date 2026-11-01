@@ -30,9 +30,9 @@ $roleBadgeClass = match ($accountRole) {
 <body>
     <div class="wrap site-shell">
         <header class="site-header">
-            <a class="brand" href="/" aria-label="Astral Forum, accueil">
+            <a class="brand" href="/" aria-label="<?= htmlspecialchars(($community->name() ?? 'Astral Forum'), ENT_QUOTES, 'UTF-8') ?>, accueil">
                 <span class="brand-mark" aria-hidden="true">✦</span>
-                <span>Astral <b>Forum</b></span>
+                <span><?= htmlspecialchars($community->name() ?? 'Astral Forum', ENT_QUOTES, 'UTF-8') ?></span>
             </a>
             <nav class="main-nav" aria-label="Navigation principale">
                 <?php if (!$isAdmin): ?>
@@ -40,7 +40,7 @@ $roleBadgeClass = match ($accountRole) {
                     <a class="<?= trim($navActive('/forums')) ?>" href="/forums">Forums</a>
                     <a class="<?= trim($navActive('/search')) ?>" href="/search">Recherche</a>
                     <?php if ($auth->check()): ?>
-                        <a class="<?= trim(str_starts_with($path, '/account/faq') || str_starts_with($path, '/faq') ? 'is-active' : '') ?>" href="/account/faq-proposals">FAQ</a>
+                        <a class="<?= trim(str_starts_with($path, '/account/faq') || str_starts_with($path, '/faq') ? 'is-active' : '') ?>" href="/account/faq-proposals">Mes FAQ</a>
                         <?php if ($auth->is(\Core\Auth\Role::Admin)): ?>
                             <a href="/admin/forums">Administration</a>
                         <?php endif ?>
@@ -79,6 +79,7 @@ $roleBadgeClass = match ($accountRole) {
                     <a class="<?= str_starts_with($path, '/admin/forums') ? 'is-active' : '' ?>" href="/admin/forums">Forums</a>
                     <a class="<?= str_starts_with($path, '/admin/faq') ? 'is-active' : '' ?>" href="/admin/faq/proposals">FAQ</a>
                     <a class="<?= str_starts_with($path, '/admin/users') ? 'is-active' : '' ?>" href="/admin/users">Utilisateurs</a>
+                    <a class="<?= str_starts_with($path, '/admin/setup') ? 'is-active' : '' ?>" href="/admin/setup">Communauté</a>
                     <a class="<?= str_starts_with($path, '/profile') ? 'is-active' : '' ?>" href="/profile">Mon profil</a>
                     <a class="back" href="/forums">← Retour au site</a>
                 </div>

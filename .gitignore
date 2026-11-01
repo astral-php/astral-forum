@@ -1,11 +1,13 @@
 /vendor/
 /database/*.sqlite
+/database/backups/
 /.env
 /storage/logs/*
 !/storage/logs/.gitkeep
 /storage/cache/*
 !/storage/cache/.gitkeep
 /storage/qa-*
+/storage/community.json
 /.phpunit.result.cache
 composer.lock
 .vscode/

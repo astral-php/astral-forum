@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Controllers\Admin\CommunitySetupController;
 use App\Controllers\Admin\FaqReviewController;
 use App\Controllers\Admin\ForumAdminController;
 use App\Controllers\Admin\ModerationController;
@@ -31,6 +32,7 @@ use App\Listeners\LogRoleChange;
 use App\Listeners\LogUserActivity;
 use App\Listeners\SendWelcomeEmail;
 use App\Services\ActionThrottler;
+use App\Services\CommunitySetupService;
 use App\Services\FaqWorkflowService;
 use App\Services\ForumCatalogService;
 use App\Services\ForumPermissionService;
@@ -39,6 +41,7 @@ use App\Services\PostWriteService;
 use App\Services\SearchService;
 use App\Services\TopicNotificationService;
 use App\Services\TopicWriteService;
+use App\Support\CommunitySettings;
 use Astral\AuthExtra\Throttle\CacheThrottleStore;
 use Astral\AuthExtra\Throttle\ThrottleStoreInterface;
 use Astral\Cache\CacheRepository;
@@ -77,6 +80,25 @@ final class AppServiceProvider implements ServiceProviderInterface
 
             return $dao;
         });
+
+        $container->singleton(CommunitySettings::class, function () use ($appConfig): CommunitySettings {
+            $env = (string) ($appConfig['env'] ?? 'production');
+            $path = $env === 'testing'
+                ? sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'astral-forum-community-test.json'
+                : (defined('BASE_PATH') ? BASE_PATH : dirname(__DIR__, 2))
+                    . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'community.json';
+
+            return new CommunitySettings($path, (string) ($appConfig['name'] ?? 'Astral Forum'));
+        });
+
+        $container->singleton(CommunitySetupService::class, fn (Container $c) => new CommunitySetupService(
+            $c->make(CommunitySettings::class),
+            $c->make(ForumDao::class),
+            $c->make(ForumCatalogService::class),
+        ));
+
+        $view = $container->make(View::class);
+        $view->share('community', $container->make(CommunitySettings::class));
 
         $container->singleton(ForumDao::class, fn (Container $c) => new ForumDao($c->make(PDO::class)));
         $container->singleton(TopicDao::class, fn (Container $c) => new TopicDao($c->make(PDO::class)));
@@ -176,7 +198,8 @@ final class AppServiceProvider implements ServiceProviderInterface
             view:        $c->make(View::class),
             userDao:     $c->make(UserDao::class),
             catalog:     $c->make(ForumCatalogService::class),
-            version:     (string) ($appConfig['version'] ?? '0.5.1'),
+            community:   $c->make(CommunitySettings::class),
+            version:     (string) ($appConfig['version'] ?? '1.0.0'),
             githubUrl:   (string) ($appConfig['github_url'] ?? 'https://github.com/astral-php/astral-forum'),
             websiteUrl:  (string) ($appConfig['website_url'] ?? 'https://astral-php.dev'),
         ));
@@ -196,11 +219,13 @@ final class AppServiceProvider implements ServiceProviderInterface
         ));
 
         $container->bind(ProfileController::class, fn (Container $c) => new ProfileController(
-            view:    $c->make(View::class),
-            request: $c->make(Request::class),
-            auth:    $c->make(Auth::class),
-            userDao: $c->make(UserDao::class),
-            session: $c->make(Session::class),
+            view:           $c->make(View::class),
+            request:        $c->make(Request::class),
+            auth:           $c->make(Auth::class),
+            userDao:        $c->make(UserDao::class),
+            session:        $c->make(Session::class),
+            subscriptions:  $c->make(TopicSubscriptionDao::class),
+            remember:       $c->make(\Astral\AuthExtra\RememberMe\RememberMeManager::class),
         ));
 
         $container->bind(AdminUserController::class, fn (Container $c) => new AdminUserController(
@@ -220,6 +245,7 @@ final class AppServiceProvider implements ServiceProviderInterface
             session:          $c->make(Session::class),
             mailer:           $c->make(Mailer::class),
             dispatcher:       $c->make(EventDispatcher::class),
+            remember:         $c->make(\Astral\AuthExtra\RememberMe\RememberMeManager::class),
             registrationMode: (string) ($appConfig['auth_registration'] ?? 'direct'),
             appBaseUrl:       (string) ($appConfig['base_url'] ?? ''),
         ));
@@ -270,6 +296,15 @@ final class AppServiceProvider implements ServiceProviderInterface
             faqDao:    $c->make(FaqSubmissionDao::class),
             workflow:  $c->make(FaqWorkflowService::class),
             throttler: $c->make(ActionThrottler::class),
+        ));
+
+        $container->bind(CommunitySetupController::class, fn (Container $c) => new CommunitySetupController(
+            view:     $c->make(View::class),
+            request:  $c->make(Request::class),
+            session:  $c->make(Session::class),
+            settings: $c->make(CommunitySettings::class),
+            setup:    $c->make(CommunitySetupService::class),
+            forumDao: $c->make(ForumDao::class),
         ));
 
         $container->bind(ForumAdminController::class, fn (Container $c) => new ForumAdminController(

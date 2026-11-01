@@ -141,6 +141,41 @@ final class UserDao extends AbstractDao
         )->execute([':role' => $roleValue, ':id' => $userId]);
     }
 
+    public function countByRole(Role|string $role): int
+    {
+        $value = $role instanceof Role ? $role->value : $role;
+        $stmt = $this->pdo->prepare(
+            "SELECT COUNT(*) FROM {$this->getTable()} WHERE role = :role"
+        );
+        $stmt->execute([':role' => $value]);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * Anonymise le compte : messages conservés, plus de connexion possible.
+     */
+    public function anonymize(int $userId): void
+    {
+        $this->pdo->prepare(
+            "UPDATE {$this->getTable()}
+             SET name = :name,
+                 email = :email,
+                 password = :password,
+                 role = :role,
+                 verification_token = NULL,
+                 password_reset_token = NULL,
+                 password_reset_expires_at = NULL
+             WHERE id = :id"
+        )->execute([
+            ':name' => 'Membre parti',
+            ':email' => 'deleted+' . $userId . '@anonymized.local',
+            ':password' => password_hash(bin2hex(random_bytes(32)), PASSWORD_BCRYPT),
+            ':role' => Role::User->value,
+            ':id' => $userId,
+        ]);
+    }
+
     // -------------------------------------------------------------------------
     // Authentification
     // -------------------------------------------------------------------------

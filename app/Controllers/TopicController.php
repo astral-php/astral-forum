@@ -16,6 +16,7 @@ use Controller\AbstractController;
 use Core\Auth\Auth;
 use Core\Exception\AuthorizationException;
 use Core\Exception\NotFoundException;
+use Core\Http\RedirectResponse;
 use Core\Http\Response;
 use Core\Request;
 use Core\Session;
@@ -97,6 +98,10 @@ final class TopicController extends AbstractController
             throw new NotFoundException('Forum introuvable.');
         }
 
+        if ($forum->isFaq()) {
+            return RedirectResponse::to('/faq/proposals/create');
+        }
+
         if (!$this->permissions->canCreateTopic($forum, $this->auth)) {
             throw new AuthorizationException('Création de sujet non autorisée.');
         }
@@ -114,6 +119,10 @@ final class TopicController extends AbstractController
         $forum = $this->forumDao->findActiveBySlug($slug);
         if ($forum === null) {
             throw new NotFoundException('Forum introuvable.');
+        }
+
+        if ($forum->isFaq()) {
+            return RedirectResponse::to('/faq/proposals/create');
         }
 
         $userId = (int) $this->auth->id();

@@ -6,10 +6,10 @@ $forums = $forums ?? [];
 ?>
 <section class="hero">
     <div class="hero-content">
-        <span class="eyebrow">La communauté Astral · v<?= htmlspecialchars((string) $version, ENT_QUOTES, 'UTF-8') ?></span>
+        <span class="eyebrow"><?= htmlspecialchars($community->name(), ENT_QUOTES, 'UTF-8') ?> · v<?= htmlspecialchars((string) $version, ENT_QUOTES, 'UTF-8') ?></span>
         <h1>Échangeons,<br><span>partageons, progressons.</span></h1>
         <p class="hero-copy">
-            Retrouvez les discussions, posez vos questions et partagez vos expériences avec la communauté Astral PHP.
+            <?= htmlspecialchars($community->tagline(), ENT_QUOTES, 'UTF-8') ?>
         </p>
         <div class="hero-actions">
             <a class="btn btn-primary" href="/forums">Explorer les forums →</a>
@@ -18,7 +18,7 @@ $forums = $forums ?? [];
             <?php elseif (!$auth->check()): ?>
                 <a class="link-arrow" href="/register">Rejoindre la communauté →</a>
             <?php else: ?>
-                <a class="link-arrow" href="/faq/proposals/create">Proposer une FAQ →</a>
+                <a class="link-arrow" href="/faq/proposals/create">Rédiger une FAQ →</a>
             <?php endif ?>
         </div>
     </div>
@@ -47,7 +47,7 @@ $forums = $forums ?? [];
         <article class="feature-card">
             <span class="feature-icon" aria-hidden="true">✦</span>
             <h3>Communauté</h3>
-            <p>Des membres qui s’entraident autour d’Astral PHP.</p>
+            <p>Des membres qui s’entraident autour de <?= htmlspecialchars($community->name(), ENT_QUOTES, 'UTF-8') ?>.</p>
         </article>
     </div>
 </section>
@@ -83,14 +83,14 @@ $forums = $forums ?? [];
     <aside class="home-sidebar">
         <div class="side-card featured">
             <h3>À la une</h3>
-            <p>Bienvenue sur Astral Forum — discussions, FAQ modérée, identité Nova maroon.</p>
+            <p>Bienvenue sur <?= htmlspecialchars($community->name(), ENT_QUOTES, 'UTF-8') ?> — discussions et FAQ modérée.</p>
             <a href="/forums">Voir les forums →</a>
         </div>
         <div class="side-card">
             <h3>FAQ</h3>
             <p>Questions fréquentes officielles et propositions de la communauté.</p>
             <?php if ($auth->check()): ?>
-                <a href="/account/faq-proposals">Mes propositions FAQ →</a>
+                <a href="/account/faq-proposals">Mes FAQ →</a>
             <?php else: ?>
                 <a href="/login">Se connecter pour la FAQ →</a>
             <?php endif ?>

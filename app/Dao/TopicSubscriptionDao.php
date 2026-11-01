@@ -34,6 +34,14 @@ final class TopicSubscriptionDao extends AbstractDao
         ]);
     }
 
+    public function unsubscribeAllForUser(int $userId): void
+    {
+        $this->execute(
+            "DELETE FROM {$this->getTable()} WHERE user_id = :user_id",
+            [':user_id' => $userId],
+        );
+    }
+
     public function unsubscribe(int $topicId, int $userId): void
     {
         $this->execute(

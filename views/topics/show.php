@@ -16,17 +16,24 @@ $subscribed = $subscribed ?? false;
     <p style="margin:0 0 0.35rem">
         <a href="/forums/<?= htmlspecialchars($forum->slug, ENT_QUOTES, 'UTF-8') ?>">← <?= htmlspecialchars($forum->name, ENT_QUOTES, 'UTF-8') ?></a>
     </p>
+    <?php $isFaq = $forum->isFaq(); ?>
     <div class="page-intro">
         <h1><?= htmlspecialchars($topic->title, ENT_QUOTES, 'UTF-8') ?></h1>
         <p class="topic-intro-meta">
-            <?php if ($topic->isLocked()): ?><span class="pill">Verrouillé</span><?php endif ?>
+            <?php if ($isFaq): ?>
+                <span class="faq-read-only-hint" style="margin:0">Lecture seule</span>
+            <?php elseif ($topic->isLocked()): ?>
+                <span class="pill">Verrouillé</span>
+            <?php endif ?>
             <?php if ($topic->isPinned()): ?><span class="pill">Épinglé</span><?php endif ?>
-            <?php $verbose = true; require __DIR__ . '/../partials/topic-stats.php'; ?>
+            <?php if (!$isFaq): ?>
+                <?php $verbose = true; require __DIR__ . '/../partials/topic-stats.php'; ?>
+            <?php endif ?>
             <span class="topic-date"><?= htmlspecialchars($topic->created_at, ENT_QUOTES, 'UTF-8') ?></span>
         </p>
     </div>
 
-    <?php if ($auth->check()): ?>
+    <?php if ($auth->check() && !$isFaq): ?>
         <div style="margin-bottom:1.25rem">
             <?php if ($subscribed): ?>
                 <form method="POST" action="/topics/<?= (int) $topic->id ?>/unsubscribe" style="display:inline">
@@ -44,10 +51,12 @@ $subscribed = $subscribed ?? false;
 
     <?php if ($canModerate): ?>
         <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.25rem">
+            <?php if (!$isFaq): ?>
             <form method="POST" action="/admin/topics/<?= (int) $topic->id ?>/<?= $topic->isLocked() ? 'unlock' : 'lock' ?>" style="margin:0">
                 <?= $csrf->field() ?>
                 <button type="submit" class="btn btn-ghost"><?= $topic->isLocked() ? 'Déverrouiller' : 'Verrouiller' ?></button>
             </form>
+            <?php endif ?>
             <form method="POST" action="/admin/topics/<?= (int) $topic->id ?>/<?= $topic->isPinned() ? 'unpin' : 'pin' ?>" style="margin:0">
                 <?= $csrf->field() ?>
                 <button type="submit" class="btn btn-ghost"><?= $topic->isPinned() ? 'Désépingler' : 'Épingler' ?></button>
@@ -106,6 +115,8 @@ $subscribed = $subscribed ?? false;
                 <button type="submit" class="btn btn-primary">Envoyer</button>
             </form>
         </div>
+    <?php elseif ($isFaq): ?>
+        <p class="faq-read-only-hint" style="margin-top:1rem">Cette FAQ est en lecture seule.</p>
     <?php elseif ($topic->isLocked()): ?>
         <p style="color:var(--muted)">Ce sujet est verrouillé.</p>
     <?php endif ?>

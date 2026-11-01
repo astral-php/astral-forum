@@ -129,7 +129,7 @@ final class ForumAdminController extends AbstractController
         }
 
         $this->forumDao->update($forum->id, [
-            'name'        => $name,
+            'name'        => $forum->isGeneral() ? \App\Support\CommunitySettings::GENERAL_NAME : $name,
             'description' => trim((string) ($post['description'] ?? '')) ?: null,
             'position'    => (int) ($post['position'] ?? $forum->position),
             'allow_member_replies' => isset($post['allow_member_replies']) ? 1 : 0,

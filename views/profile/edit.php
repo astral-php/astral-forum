@@ -71,4 +71,19 @@ $old = $old ?? [];
             <button type="submit" class="btn btn-ghost">Modifier le mot de passe</button>
         </form>
     </div>
+
+    <div class="auth-card" style="max-width:100%;margin-top:1.25rem;text-align:left;border-color:#f0c2be">
+        <h2 style="font-family:Fraunces,Georgia,serif;font-size:1.15rem;margin:0 0 0.5rem">Supprimer mon compte</h2>
+        <p style="color:var(--muted);font-size:0.9rem;margin:0 0 1rem">
+            Anonymisation : vos messages restent, votre nom devient « Membre parti ». Pas de suppression en cascade.
+        </p>
+        <form method="POST" action="/profile/delete" class="form-stack" onsubmit="return confirm('Supprimer définitivement l’accès à ce compte ?');">
+            <?= $csrf->field() ?>
+            <div class="field">
+                <label for="delete_password">Confirmer avec votre mot de passe</label>
+                <input class="input" type="password" id="delete_password" name="password" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-ghost" style="color:#8a1f1a;border-color:#f0c2be">Anonymiser mon compte</button>
+        </form>
+    </div>
 </section>

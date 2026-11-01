@@ -35,7 +35,7 @@ final class FaqReviewController extends AbstractController
         $result = $this->faqDao->paginateForAdmin($page, 20, $status !== '' ? $status : null);
 
         return $this->render('admin/faq/index', [
-            'title'       => 'Admin — Propositions FAQ',
+            'title'       => 'Admin — File FAQ',
             'submissions' => $result['data'],
             'total'       => $result['total'],
             'pages'       => $result['pages'],
@@ -82,15 +82,24 @@ final class FaqReviewController extends AbstractController
         /** @var \App\Models\FaqSubmission|null $submission */
         $submission = $this->faqDao->findById((int) $id);
         if ($submission === null) {
-            throw new NotFoundException('Proposition introuvable.');
+            throw new NotFoundException('FAQ introuvable.');
         }
 
         try {
-            if ($submission->status === 'pending') {
+            /** @var \App\Models\FaqSubmission $current */
+            $current = $submission;
+            if ($current->status === 'pending' || $current->status === 'changes_requested') {
                 $this->workflow->transition((int) $id, 'under_review', $this->auth);
+                /** @var \App\Models\FaqSubmission $current */
+                $current = $this->faqDao->findById((int) $id);
             }
-            $this->workflow->transition((int) $id, 'approved', $this->auth);
-            $this->session->flash('success', 'Proposition approuvée.');
+            if ($current->status === 'under_review') {
+                $this->workflow->transition((int) $id, 'approved', $this->auth);
+            }
+            /** @var \App\Models\FaqSubmission $fresh */
+            $fresh = $this->faqDao->findById((int) $id);
+            $this->workflow->publish($fresh, $this->auth);
+            $this->session->flash('success', 'FAQ publiée (lecture seule).');
         } catch (InvalidArgumentException $e) {
             $this->session->flash('error', $e->getMessage());
         }

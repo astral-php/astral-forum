@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Dao\UserDao;
 use App\Events\UserLoggedIn;
 use App\Events\UserRegistered;
+use Astral\AuthExtra\RememberMe\RememberMeManager;
 use Controller\AbstractController;
 use Core\Auth\Auth;
 use Core\Events\EventDispatcher;
@@ -35,10 +36,11 @@ final class AuthController extends AbstractController
         private Auth            $auth,
         private UserDao         $userDao,
         private Session         $session,
-        private Mailer          $mailer,
-        private EventDispatcher $dispatcher,
-        private string          $registrationMode,
-        private string          $appBaseUrl,
+        private Mailer            $mailer,
+        private EventDispatcher   $dispatcher,
+        private RememberMeManager $remember,
+        private string            $registrationMode,
+        private string            $appBaseUrl,
     ) {
         parent::__construct($view);
     }
@@ -102,7 +104,17 @@ final class AuthController extends AbstractController
         ));
         $this->session->flash('success', "Bienvenue, {$user->name} !");
 
-        return $this->redirect('/');
+        $response = $this->redirect('/');
+        if (!empty($post['remember'])) {
+            $token = $this->remember->create((int) $user->id);
+            $secure = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+            $response->addHeader(
+                'Set-Cookie',
+                $this->remember->buildSetCookieHeader($token['cookie_value'], $token['expires_at'], $secure)
+            );
+        }
+
+        return $response;
     }
 
     // -------------------------------------------------------------------------
@@ -111,10 +123,21 @@ final class AuthController extends AbstractController
 
     public function logout(): Response
     {
+        $cookieName = $this->remember->cookieName();
+        $raw = isset($_COOKIE[$cookieName]) ? (string) $_COOKIE[$cookieName] : null;
+        $this->remember->forget($raw);
+        if ($this->auth->id() !== null) {
+            $this->remember->forgetAllForUser((int) $this->auth->id());
+        }
+
         $this->auth->logout();
         $this->session->flash('success', 'Vous avez été déconnecté.');
 
-        return $this->redirect('/login');
+        $response = $this->redirect('/login');
+        $secure = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+        $response->addHeader('Set-Cookie', $this->remember->buildClearCookieHeader($secure));
+
+        return $response;
     }
 
     // -------------------------------------------------------------------------

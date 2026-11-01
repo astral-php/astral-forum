@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Dao\UserDao;
 use App\Services\ForumCatalogService;
+use App\Support\CommunitySettings;
 use Controller\AbstractController;
 use Core\Http\Response;
 use Core\View;
@@ -19,6 +20,7 @@ final class HomeController extends AbstractController
         View $view,
         private UserDao $userDao,
         private ForumCatalogService $catalog,
+        private CommunitySettings $community,
         private string $version = '0.1.2',
         private string $githubUrl = 'https://github.com/astral-php/astral-forum',
         private string $websiteUrl = 'https://astral-php.dev',
@@ -29,7 +31,7 @@ final class HomeController extends AbstractController
     public function index(): Response
     {
         return $this->render('home/index', [
-            'title' => 'Astral Forum',
+            'title' => $this->community->name(),
             'version' => $this->version,
             'hasUsers' => $this->userDao->count() > 0,
             'githubUrl' => $this->githubUrl,

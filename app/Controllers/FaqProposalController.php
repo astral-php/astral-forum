@@ -32,7 +32,7 @@ final class FaqProposalController extends AbstractController
     public function createForm(): Response
     {
         return $this->render('faq/create', [
-            'title'  => 'Proposer une FAQ',
+            'title'  => 'Rédiger une FAQ',
             'errors' => [],
             'old'    => [],
         ]);
@@ -45,7 +45,7 @@ final class FaqProposalController extends AbstractController
             $wait = $this->throttler->availableIn('faq', $userId);
 
             return $this->render('faq/create', [
-                'title'  => 'Proposer une FAQ',
+                'title'  => 'Rédiger une FAQ',
                 'errors' => ['title' => [
                     sprintf('Trop de propositions. Réessayez dans %d s.', $wait),
                 ]],
@@ -61,7 +61,7 @@ final class FaqProposalController extends AbstractController
 
         if ($v->fails()) {
             return $this->render('faq/create', [
-                'title'  => 'Proposer une FAQ',
+                'title'  => 'Rédiger une FAQ',
                 'errors' => $v->errors(),
                 'old'    => $post,
             ]);
@@ -84,7 +84,7 @@ final class FaqProposalController extends AbstractController
         $items = $this->faqDao->findByUser((int) $this->auth->id());
 
         return $this->render('faq/account_index', [
-            'title'       => 'Mes propositions FAQ',
+            'title'       => 'Mes FAQ',
             'submissions' => $items,
         ]);
     }
@@ -98,7 +98,7 @@ final class FaqProposalController extends AbstractController
         }
 
         return $this->render('faq/account_show', [
-            'title'      => 'Proposition FAQ',
+            'title'      => 'Ma FAQ',
             'submission' => $submission,
         ]);
     }

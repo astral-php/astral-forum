@@ -55,6 +55,7 @@ final class ForumController extends AbstractController
             'pages' => $result['pages'],
             'current' => $result['current'],
             'canCreateTopic' => $this->permissions->canCreateTopic($forum, $this->auth),
+            'canWriteFaq' => $forum->isFaq() && $this->auth->check(),
         ]);
     }
 }

@@ -3,7 +3,7 @@
 Forum **create-project** (starter **2.1** + astral-core **^2.1**) : forums, sujets, posts, FAQ modérée.
 
 [![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)](https://www.php.net)
-[![Version](https://img.shields.io/badge/version-0.5.1-blue)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](./CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![Tests](https://img.shields.io/badge/tests-PHPUnit%20OK-9933CC)](./phpunit.xml)
 
@@ -11,7 +11,7 @@ Forum **create-project** (starter **2.1** + astral-core **^2.1**) : forums, suje
 |---|---|
 | **UI** | Nova **maroon** (`#9f1239`) |
 | **URL locale** | [http://astral-forum.local/](http://astral-forum.local/) |
-| **Roadmap 1.0** | [ROADMAP.md](./ROADMAP.md) |
+| **Roadmap** | [ROADMAP.md](./ROADMAP.md) |
 
 ## Prérequis
 
@@ -22,25 +22,31 @@ Forum **create-project** (starter **2.1** + astral-core **^2.1**) : forums, suje
 ## Installation
 
 ```bash
-composer create-project astral-php/astral-forum:^0.5.1 mon-forum
+composer create-project astral-php/astral-forum:^1.0 mon-forum
 cd mon-forum
 cp .env.example .env
 php bin/console migrate
 ```
 
-Ouvrir **http://astral-forum.local/** (ou configurer le vhost) → `/register` (premier compte = admin).
+Ouvrir **http://astral-forum.local/** (ou configurer le vhost) → `/register` (premier compte = admin).  
+Puis **Administration** → wizard communauté (nom, accroche, description du Forum général).
 
-## Fonctionnalités 0.5.1
+Docs : [docs/INSTALL.md](./docs/INSTALL.md) · [docs/FAQ.md](./docs/FAQ.md).
 
+## Fonctionnalités 1.0.0
+
+- Setup identité communauté (1re visite admin)
 - UI **Nova Maroon Light** + polish formulaires / nav compte / admin forums
 - Forum général seedé à la migration
 - Lecture publique, création sujet + réponse (membres)
 - Recherche, compteurs réponses/vues, cache liste forums
 - Abonnements + e-mail sync sur réponse
-- FAQ configurable + resoumission après rejet
+- FAQ modèle rédacteur (publier / complément / refus) + lecture seule une fois publiée
+- Remember-me · anonymisation compte
 - Édition / soft-delete ; throttle auth-extra
 - Rôles : Admin · Modérateur · User · Guest
 - Modération : verrouiller / épingler / masquer (admin + modérateur)
+- CI GitHub Actions + docs install / FAQ
 
 Comptes démo locaux (après migrate) :
 
@@ -76,4 +82,3 @@ CSRF : champ `_token`.
 
 - Packagist : [astral-php/astral-forum](https://packagist.org/packages/astral-php/astral-forum)
 - GitHub : [astral-php/astral-forum](https://github.com/astral-php/astral-forum)
-- Changelog : [CHANGELOG.md](./CHANGELOG.md)

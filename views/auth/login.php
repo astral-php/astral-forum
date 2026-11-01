@@ -31,6 +31,10 @@
                        placeholder="••••••••">
                 <?= $viewEngine->partial('partials/field-error', ['field' => 'password', 'errors' => $errors ?? []]) ?>
             </div>
+            <label style="display:flex;gap:0.5rem;align-items:center;font-size:0.9rem">
+                <input type="checkbox" name="remember" value="1">
+                Se souvenir de moi
+            </label>
 
             <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
         </form>

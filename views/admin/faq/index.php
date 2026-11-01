@@ -2,8 +2,8 @@
 <section>
     <div class="page-intro">
         <span class="eyebrow">Administration</span>
-        <h1>Propositions FAQ</h1>
-        <p>Revue et publication des questions proposées.</p>
+        <h1>File FAQ</h1>
+        <p>Revue des FAQ rédigées : publier, demander un complément, ou refuser.</p>
     </div>
 
     <p style="margin:0 0 1.25rem;display:flex;flex-wrap:wrap;gap:0.5rem">
@@ -21,7 +21,11 @@
                 <li class="topic-row">
                     <div class="topic-row-main">
                         <a href="/admin/faq/proposals/<?= (int) $s->id ?>"><?= htmlspecialchars($s->title, ENT_QUOTES, 'UTF-8') ?></a>
-                        <div class="topic-meta"><?= htmlspecialchars(\App\Support\FaqStatus::label($s->status), ENT_QUOTES, 'UTF-8') ?></div>
+                        <div class="topic-meta" style="margin-top:.35rem">
+                            <span class="badge <?= htmlspecialchars(\App\Support\FaqStatus::badgeClass($s->status), ENT_QUOTES, 'UTF-8') ?>">
+                                <?= htmlspecialchars(\App\Support\FaqStatus::label($s->status), ENT_QUOTES, 'UTF-8') ?>
+                            </span>
+                        </div>
                     </div>
                 </li>
             <?php endforeach ?>

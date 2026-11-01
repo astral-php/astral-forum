@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Controllers\Admin\CommunitySetupController;
 use App\Controllers\Admin\FaqReviewController;
 use App\Controllers\Admin\ForumAdminController;
 use App\Controllers\Admin\ModerationController;
@@ -15,13 +16,17 @@ use App\Controllers\ProfileController;
 use App\Controllers\SearchController;
 use App\Controllers\TopicController;
 use App\Controllers\UserController;
+use App\Middleware\CommunitySetupMiddleware;
 use App\Middleware\ModeratorMiddleware;
+use App\Middleware\RememberMeMiddleware;
 use Core\Auth\Middleware\AdminMiddleware;
 use Core\Auth\Middleware\AuthMiddleware;
 use Core\Auth\Middleware\GuestMiddleware;
 use Core\Router;
 
 return function (Router $router): void {
+
+    $router->group('', function (Router $router): void {
 
     $router->get('/', HomeController::class, 'index');
     $router->get('/search', SearchController::class, 'index');
@@ -54,6 +59,7 @@ return function (Router $router): void {
         $r->get('/profile',           ProfileController::class, 'editForm');
         $r->post('/profile',          ProfileController::class, 'update');
         $r->post('/profile/password', ProfileController::class, 'updatePassword');
+        $r->post('/profile/delete',   ProfileController::class, 'destroy');
 
         $r->post('/topics/:id/posts', PostController::class, 'store');
         $r->get('/posts/:id/edit', PostController::class, 'editForm');
@@ -84,6 +90,9 @@ return function (Router $router): void {
     }, [AdminMiddleware::class]);
 
     $router->group('/admin', function (Router $r): void {
+        $r->get('/setup', CommunitySetupController::class, 'form');
+        $r->post('/setup', CommunitySetupController::class, 'store');
+
         $r->get('/users',           AdminUserController::class, 'index');
         $r->post('/users/:id/role', AdminUserController::class, 'updateRole');
 
@@ -101,7 +110,7 @@ return function (Router $router): void {
         $r->post('/faq/proposals/:id/reject', FaqReviewController::class, 'reject');
         $r->post('/faq/proposals/:id/approve', FaqReviewController::class, 'approve');
         $r->post('/faq/proposals/:id/publish', FaqReviewController::class, 'publish');
-    }, [AdminMiddleware::class]);
+    }, [AdminMiddleware::class, CommunitySetupMiddleware::class]);
 
     // Modération : Admin ou Modérateur
     $router->group('/admin', function (Router $r): void {
@@ -111,4 +120,6 @@ return function (Router $router): void {
         $r->post('/topics/:id/unpin', ModerationController::class, 'unpin');
         $r->post('/posts/:id/hide', ModerationController::class, 'hidePost');
     }, [ModeratorMiddleware::class]);
+
+    }, [RememberMeMiddleware::class]);
 };

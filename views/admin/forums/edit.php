@@ -24,8 +24,13 @@ $typeLabel = match ($forum->type) {
             <?= $csrf->field() ?>
             <div class="field">
                 <label for="name">Nom</label>
-                <input class="input" id="name" name="name" required
-                       value="<?= htmlspecialchars($forum->name, ENT_QUOTES, 'UTF-8') ?>">
+                <?php if ($forum->isGeneral()): ?>
+                    <input class="input" id="name" name="name" value="Forum général" readonly>
+                    <p class="hint" style="margin:.35rem 0 0;color:var(--muted);font-size:.8rem">Nom figé pour le forum général.</p>
+                <?php else: ?>
+                    <input class="input" id="name" name="name" required
+                           value="<?= htmlspecialchars($forum->name, ENT_QUOTES, 'UTF-8') ?>">
+                <?php endif ?>
             </div>
             <div class="field">
                 <label for="description">Description</label>

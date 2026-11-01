@@ -21,4 +21,18 @@ final class FaqStatus
             default => $status,
         };
     }
+
+    /** Classe CSS badge (couleur) pour le statut. */
+    public static function badgeClass(string $status): string
+    {
+        return match ($status) {
+            'pending' => 'badge-faq-pending',
+            'under_review' => 'badge-faq-review',
+            'changes_requested' => 'badge-faq-changes',
+            'approved' => 'badge-faq-approved',
+            'published' => 'badge-faq-published',
+            'rejected' => 'badge-faq-rejected',
+            default => 'badge-user',
+        };
+    }
 }
