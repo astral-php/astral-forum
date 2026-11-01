@@ -9,6 +9,18 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 Voir [ROADMAP.md](./ROADMAP.md) pour le chemin vers **1.0.0**.
 
+## [0.3.0] - 2026-11-01
+
+### Ajouté
+
+- Recherche publique paginée (`/search`) — titre + contenu des messages publiés.
+- Rôle app **moderator** (`ForumRoles`) : lock / pin / hide sans accès admin forums/FAQ/users.
+- `ModeratorMiddleware` sur les routes de modération.
+
+### Modifié
+
+- `ForumPermissionService` : `canModerate` = Admin|Modérateur ; `canManageForums` / FAQ = Admin seul.
+
 ## [0.2.0] - 2026-11-01
 
 ### Ajouté

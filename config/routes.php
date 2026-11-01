@@ -12,8 +12,10 @@ use App\Controllers\ForumController;
 use App\Controllers\HomeController;
 use App\Controllers\PostController;
 use App\Controllers\ProfileController;
+use App\Controllers\SearchController;
 use App\Controllers\TopicController;
 use App\Controllers\UserController;
+use App\Middleware\ModeratorMiddleware;
 use Core\Auth\Middleware\AdminMiddleware;
 use Core\Auth\Middleware\AuthMiddleware;
 use Core\Auth\Middleware\GuestMiddleware;
@@ -22,6 +24,7 @@ use Core\Router;
 return function (Router $router): void {
 
     $router->get('/', HomeController::class, 'index');
+    $router->get('/search', SearchController::class, 'index');
 
     $router->get('/login',     AuthController::class, 'loginForm')->middleware(GuestMiddleware::class);
     $router->post('/login',    AuthController::class, 'login')->middleware(GuestMiddleware::class);
@@ -91,11 +94,14 @@ return function (Router $router): void {
         $r->post('/faq/proposals/:id/reject', FaqReviewController::class, 'reject');
         $r->post('/faq/proposals/:id/approve', FaqReviewController::class, 'approve');
         $r->post('/faq/proposals/:id/publish', FaqReviewController::class, 'publish');
+    }, [AdminMiddleware::class]);
 
+    // Modération : Admin ou Modérateur
+    $router->group('/admin', function (Router $r): void {
         $r->post('/topics/:id/lock', ModerationController::class, 'lock');
         $r->post('/topics/:id/unlock', ModerationController::class, 'unlock');
         $r->post('/topics/:id/pin', ModerationController::class, 'pin');
         $r->post('/topics/:id/unpin', ModerationController::class, 'unpin');
         $r->post('/posts/:id/hide', ModerationController::class, 'hidePost');
-    }, [AdminMiddleware::class]);
+    }, [ModeratorMiddleware::class]);
 };

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Admin;
 
+use App\Auth\ForumRoles;
 use App\Dao\UserDao;
 use App\Events\RoleChanged;
 use Controller\AbstractController;
@@ -24,7 +25,7 @@ use Core\View;
  * Règles de sécurité appliquées :
  *   - Un admin ne peut pas modifier son propre rôle.
  *   - Le dernier administrateur ne peut pas être rétrogradé.
- *   - Seuls les rôles valides (Role::all()) sont acceptés.
+ *   - Rôles assignables : admin, moderator, user (ForumRoles).
  */
 final class UserController extends AbstractController
 {
@@ -54,7 +55,7 @@ final class UserController extends AbstractController
         return $this->render('admin/users/index', [
             'title'      => 'Gestion des rôles',
             'users'      => $users,
-            'roles'      => Role::all(),
+            'roles'      => ForumRoles::assignable(),
             'adminCount' => $adminCount,
         ]);
     }
@@ -73,8 +74,8 @@ final class UserController extends AbstractController
             return $this->redirect('/admin/users');
         }
 
-        // ── Guard 2 : rôle valide ─────────────────────────────────────────────
-        if (!Role::isValid($newRole)) {
+        // ── Guard 2 : rôle assignable forum ───────────────────────────────────
+        if (!ForumRoles::isAssignable($newRole)) {
             $this->session->flash('error', "Rôle invalide : « {$newRole} ».");
             return $this->redirect('/admin/users');
         }
@@ -109,7 +110,7 @@ final class UserController extends AbstractController
             changedBy: (int) $this->auth->id(),
         ));
 
-        $roleLabel = ucfirst($newRole);
+        $roleLabel = ForumRoles::label($newRole);
         $this->session->flash(
             'success',
             "Rôle de {$user->name} mis à jour : {$roleLabel}.",

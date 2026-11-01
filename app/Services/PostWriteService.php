@@ -98,10 +98,10 @@ final class PostWriteService
             throw new AuthorizationException('Sujet verrouillé.');
         }
 
-        // Ne pas soft-delete le premier message (casse le sujet) — admin utilise hide.
-        if ($ctx['topic']->first_post_id === $post->id && !$this->permissions->canModerate($auth)) {
+        // Premier message : soft-delete interdit (même modo) — admin utilise hide.
+        if ($ctx['topic']->first_post_id === $post->id) {
             throw new AuthorizationException(
-                'Le premier message du sujet ne peut pas être supprimé ainsi. Contactez un admin.'
+                'Le premier message du sujet ne peut pas être soft-supprimé. Utilisez le masquage admin.'
             );
         }
 

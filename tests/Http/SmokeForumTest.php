@@ -45,4 +45,17 @@ final class SmokeForumTest extends HttpSmokeTestCase
         $this->assertSame(200, $response->getStatus());
         $this->assertStringContainsString('Astral Forum', $response->getContent());
     }
+
+    public function testSearchPageReturns200(): void
+    {
+        $response = $this->get('/search');
+        $this->assertSame(200, $response->getStatus());
+        $this->assertStringContainsString('Recherche', $response->getContent());
+    }
+
+    public function testSearchQueryReturns200(): void
+    {
+        $response = $this->get('/search?q=forum');
+        $this->assertSame(200, $response->getStatus());
+    }
 }

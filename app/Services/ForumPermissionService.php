@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Auth\ForumRoles;
 use App\Models\Forum;
 use App\Models\Post;
 use App\Models\Topic;
@@ -43,19 +44,21 @@ final class ForumPermissionService
         return true;
     }
 
+    /** Lock / pin / hide — Admin ou Modérateur. */
     public function canModerate(Auth $auth): bool
+    {
+        return $auth->check() && $auth->can(Role::Admin, ForumRoles::MODERATOR);
+    }
+
+    /** Forums admin, users, FAQ review — Admin seul. */
+    public function canManageForums(Auth $auth): bool
     {
         return $auth->check() && $auth->is(Role::Admin);
     }
 
-    public function canManageForums(Auth $auth): bool
-    {
-        return $this->canModerate($auth);
-    }
-
     public function canReviewFaq(Auth $auth): bool
     {
-        return $this->canModerate($auth);
+        return $this->canManageForums($auth);
     }
 
     public function canEditPost(Post $post, Auth $auth): bool

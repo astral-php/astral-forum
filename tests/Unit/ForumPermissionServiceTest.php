@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\Auth\ForumRoles;
 use App\Models\Forum;
 use App\Models\Post;
 use App\Models\Topic;
@@ -130,5 +131,21 @@ final class ForumPermissionServiceTest extends TestCase
         $auth->login($user);
 
         $this->assertTrue($this->permissions->canEditPost($post, $auth));
+    }
+
+    public function test_moderator_can_moderate_but_not_manage_forums(): void
+    {
+        $user = new User();
+        $user->id = 3;
+        $user->name = 'Modo';
+        $user->email = 'modo@example.com';
+        $user->role = ForumRoles::MODERATOR;
+
+        $auth = new Auth(new Session());
+        $auth->login($user);
+
+        $this->assertTrue($this->permissions->canModerate($auth));
+        $this->assertFalse($this->permissions->canManageForums($auth));
+        $this->assertFalse($this->permissions->canReviewFaq($auth));
     }
 }

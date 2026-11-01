@@ -179,6 +179,7 @@
             <a class="brand" href="/">Astral Forum</a>
             <nav>
                 <a href="/forums">Forums</a>
+                <a href="/search">Recherche</a>
                 <?php if ($auth->check()): ?>
                     <a href="/account/faq-proposals">FAQ</a>
                     <span style="color:var(--muted)"><?= htmlspecialchars($auth->name(), ENT_QUOTES, 'UTF-8') ?></span>
@@ -187,6 +188,8 @@
                         <a href="/admin/forums">Admin</a>
                         <a href="/admin/faq/proposals">FAQ admin</a>
                         <a href="/admin/users">Users</a>
+                    <?php elseif ($auth->is(\App\Auth\ForumRoles::MODERATOR)): ?>
+                        <span style="color:var(--muted);font-size:0.8rem">Modérateur</span>
                     <?php endif ?>
                     <form method="POST" action="/logout" style="display:inline;margin:0">
                         <?= $csrf->field() ?>

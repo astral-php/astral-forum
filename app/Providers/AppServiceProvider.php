@@ -14,6 +14,7 @@ use App\Controllers\ForumController;
 use App\Controllers\HomeController;
 use App\Controllers\PostController;
 use App\Controllers\ProfileController;
+use App\Controllers\SearchController;
 use App\Controllers\TopicController;
 use App\Controllers\UserController;
 use App\Dao\FaqSubmissionDao;
@@ -33,6 +34,7 @@ use App\Services\FaqWorkflowService;
 use App\Services\ForumPermissionService;
 use App\Services\ModerationService;
 use App\Services\PostWriteService;
+use App\Services\SearchService;
 use App\Services\TopicWriteService;
 use Astral\AuthExtra\Throttle\CacheThrottleStore;
 use Astral\AuthExtra\Throttle\ThrottleStoreInterface;
@@ -111,6 +113,11 @@ final class AppServiceProvider implements ServiceProviderInterface
             $c->make(ForumPermissionService::class),
         ));
 
+        $container->singleton(SearchService::class, fn (Container $c) => new SearchService(
+            $c->make(TopicDao::class),
+            $c->make(ForumDao::class),
+        ));
+
         $container->singleton(FaqWorkflowService::class, fn (Container $c) => new FaqWorkflowService(
             $c->make(PDO::class),
             $c->make(FaqSubmissionDao::class),
@@ -149,6 +156,12 @@ final class AppServiceProvider implements ServiceProviderInterface
             version:     (string) ($appConfig['version'] ?? '0.1.0'),
             githubUrl:   (string) ($appConfig['github_url'] ?? 'https://github.com/astral-php/astral-forum'),
             websiteUrl:  (string) ($appConfig['website_url'] ?? 'https://astral-php.dev'),
+        ));
+
+        $container->bind(SearchController::class, fn (Container $c) => new SearchController(
+            view:    $c->make(View::class),
+            request: $c->make(Request::class),
+            search:  $c->make(SearchService::class),
         ));
 
         $container->bind(UserController::class, fn (Container $c) => new UserController(

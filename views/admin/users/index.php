@@ -87,12 +87,13 @@
                         <?php
                         $badgeClass = match ($user->role) {
                             'admin' => 'bg-amber-100 text-amber-700 border border-amber-200',
+                            'moderator' => 'bg-rose-50 text-rose-700 border border-rose-200',
                             'user'  => 'bg-indigo-50 text-indigo-600 border border-indigo-100',
                             default => 'bg-gray-100 text-gray-500 border border-gray-200',
                         };
                         ?>
                         <span class="inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full <?= $badgeClass ?>">
-                            <?= htmlspecialchars(ucfirst($user->role), ENT_QUOTES, 'UTF-8') ?>
+                            <?= htmlspecialchars(\App\Auth\ForumRoles::label((string) $user->role), ENT_QUOTES, 'UTF-8') ?>
                         </span>
                     </td>
 
@@ -114,10 +115,9 @@
                                 <select name="role"
                                         class="text-sm border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 transition">
                                     <?php foreach ($roles as $r): ?>
-                                        <?php if ($r === \Core\Auth\Role::Guest->value) continue; ?>
                                         <option value="<?= htmlspecialchars($r, ENT_QUOTES, 'UTF-8') ?>"
                                             <?= $user->role === $r ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars(ucfirst($r), ENT_QUOTES, 'UTF-8') ?>
+                                            <?= htmlspecialchars(\App\Auth\ForumRoles::label($r), ENT_QUOTES, 'UTF-8') ?>
                                         </option>
                                     <?php endforeach ?>
                                 </select>
