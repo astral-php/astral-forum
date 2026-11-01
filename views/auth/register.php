@@ -47,7 +47,7 @@
                 <?= $viewEngine->partial('partials/field-error', ['field' => 'password_confirmation', 'errors' => $errors ?? []]) ?>
             </div>
 
-            <button type="submit" class="btn-block">Créer le compte</button>
+            <button type="submit" class="btn btn-primary btn-block">Créer le compte</button>
         </form>
 
         <p class="auth-footer">

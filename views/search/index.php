@@ -51,6 +51,7 @@
                                 · <?= htmlspecialchars((string) ($topic->last_post_at ?? $topic->created_at), ENT_QUOTES, 'UTF-8') ?>
                             </div>
                         </div>
+                        <?php require __DIR__ . '/../partials/topic-stats.php'; ?>
                     </li>
                 <?php endforeach ?>
             </ul>

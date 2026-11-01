@@ -88,7 +88,9 @@ return function (Router $router): void {
         $r->post('/users/:id/role', AdminUserController::class, 'updateRole');
 
         $r->get('/forums', ForumAdminController::class, 'index');
+        $r->get('/forums/create', ForumAdminController::class, 'create');
         $r->post('/forums', ForumAdminController::class, 'store');
+        $r->get('/forums/:id/edit', ForumAdminController::class, 'edit');
         $r->post('/forums/:id', ForumAdminController::class, 'update');
         $r->post('/forums/:id/archive', ForumAdminController::class, 'archive');
 

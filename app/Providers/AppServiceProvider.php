@@ -176,7 +176,7 @@ final class AppServiceProvider implements ServiceProviderInterface
             view:        $c->make(View::class),
             userDao:     $c->make(UserDao::class),
             catalog:     $c->make(ForumCatalogService::class),
-            version:     (string) ($appConfig['version'] ?? '0.1.0'),
+            version:     (string) ($appConfig['version'] ?? '0.5.1'),
             githubUrl:   (string) ($appConfig['github_url'] ?? 'https://github.com/astral-php/astral-forum'),
             websiteUrl:  (string) ($appConfig['website_url'] ?? 'https://astral-php.dev'),
         ));

@@ -4,7 +4,7 @@
     <div class="page-intro">
         <span class="eyebrow">Administration</span>
         <h1><?= htmlspecialchars($submission->title, ENT_QUOTES, 'UTF-8') ?></h1>
-        <p>Statut : <?= htmlspecialchars($submission->status, ENT_QUOTES, 'UTF-8') ?></p>
+        <p>Statut : <?= htmlspecialchars(\App\Support\FaqStatus::label($submission->status), ENT_QUOTES, 'UTF-8') ?></p>
     </div>
     <div style="white-space:pre-wrap;border:1px solid var(--line);border-radius:0.85rem;padding:1rem;margin:1rem 0;background:var(--panel)">
         <?= htmlspecialchars($submission->description, ENT_QUOTES, 'UTF-8') ?>

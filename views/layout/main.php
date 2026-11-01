@@ -17,6 +17,15 @@ $navActive = static function (string $prefix) use ($path): string {
     }
     return str_starts_with($path, $prefix) ? ' is-active' : '';
 };
+$accountRole = $auth->check() ? $auth->role() : '';
+$accountInitial = $auth->check()
+    ? mb_strtoupper(mb_substr((string) $auth->name(), 0, 1))
+    : '';
+$roleBadgeClass = match ($accountRole) {
+    'admin' => 'badge-admin',
+    'moderator' => 'badge-moderator',
+    default => 'badge-user',
+};
 ?>
 <body>
     <div class="wrap site-shell">
@@ -32,13 +41,14 @@ $navActive = static function (string $prefix) use ($path): string {
                     <a class="<?= trim($navActive('/search')) ?>" href="/search">Recherche</a>
                     <?php if ($auth->check()): ?>
                         <a class="<?= trim(str_starts_with($path, '/account/faq') || str_starts_with($path, '/faq') ? 'is-active' : '') ?>" href="/account/faq-proposals">FAQ</a>
-                        <span class="nav-user"><?= htmlspecialchars($auth->name(), ENT_QUOTES, 'UTF-8') ?></span>
-                        <a href="/profile">Profil</a>
                         <?php if ($auth->is(\Core\Auth\Role::Admin)): ?>
                             <a href="/admin/forums">Administration</a>
-                        <?php elseif ($auth->is(\App\Auth\ForumRoles::MODERATOR)): ?>
-                            <span class="nav-user">Modérateur</span>
                         <?php endif ?>
+                        <a class="nav-account<?= str_starts_with($path, '/profile') ? ' is-active' : '' ?>" href="/profile" title="Mon profil">
+                            <span class="nav-avatar" aria-hidden="true"><?= htmlspecialchars($accountInitial, ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="nav-account-name"><?= htmlspecialchars($auth->name(), ENT_QUOTES, 'UTF-8') ?></span>
+                            <span class="badge <?= $roleBadgeClass ?>"><?= htmlspecialchars(\App\Auth\ForumRoles::label($accountRole), ENT_QUOTES, 'UTF-8') ?></span>
+                        </a>
                         <form method="POST" action="/logout" style="display:inline;margin:0">
                             <?= $csrf->field() ?>
                             <button type="submit" class="btn btn-ghost">Déconnexion</button>
@@ -49,7 +59,11 @@ $navActive = static function (string $prefix) use ($path): string {
                     <?php endif ?>
                 <?php else: ?>
                     <a href="/admin/forums">Administration</a>
-                    <span class="nav-user"><?= htmlspecialchars($auth->name(), ENT_QUOTES, 'UTF-8') ?></span>
+                    <a class="nav-account<?= str_starts_with($path, '/profile') ? ' is-active' : '' ?>" href="/profile" title="Mon profil">
+                        <span class="nav-avatar" aria-hidden="true"><?= htmlspecialchars($accountInitial, ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="nav-account-name"><?= htmlspecialchars($auth->name(), ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="badge <?= $roleBadgeClass ?>"><?= htmlspecialchars(\App\Auth\ForumRoles::label($accountRole), ENT_QUOTES, 'UTF-8') ?></span>
+                    </a>
                     <form method="POST" action="/logout" style="display:inline;margin:0">
                         <?= $csrf->field() ?>
                         <button type="submit" class="btn btn-ghost">Déconnexion</button>
@@ -65,6 +79,7 @@ $navActive = static function (string $prefix) use ($path): string {
                     <a class="<?= str_starts_with($path, '/admin/forums') ? 'is-active' : '' ?>" href="/admin/forums">Forums</a>
                     <a class="<?= str_starts_with($path, '/admin/faq') ? 'is-active' : '' ?>" href="/admin/faq/proposals">FAQ</a>
                     <a class="<?= str_starts_with($path, '/admin/users') ? 'is-active' : '' ?>" href="/admin/users">Utilisateurs</a>
+                    <a class="<?= str_starts_with($path, '/profile') ? 'is-active' : '' ?>" href="/profile">Mon profil</a>
                     <a class="back" href="/forums">← Retour au site</a>
                 </div>
             </div>

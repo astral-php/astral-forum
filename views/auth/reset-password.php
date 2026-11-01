@@ -30,7 +30,7 @@
                 <?= $viewEngine->partial('partials/field-error', ['field' => 'password_confirmation', 'errors' => $errors ?? []]) ?>
             </div>
 
-            <button type="submit" class="btn-block">Enregistrer</button>
+            <button type="submit" class="btn btn-primary btn-block">Enregistrer</button>
         </form>
     </div>
 </div>

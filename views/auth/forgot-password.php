@@ -31,7 +31,7 @@
                     <?= $viewEngine->partial('partials/field-error', ['field' => 'email', 'errors' => $errors ?? []]) ?>
                 </div>
 
-                <button type="submit" class="btn-block">Envoyer le lien</button>
+                <button type="submit" class="btn btn-primary btn-block">Envoyer le lien</button>
             </form>
         <?php endif ?>
 

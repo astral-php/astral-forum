@@ -14,7 +14,6 @@ use Core\Http\Response;
 use Core\Request;
 use Core\Session;
 use Core\View;
-use InvalidArgumentException;
 
 final class ForumAdminController extends AbstractController
 {
@@ -37,6 +36,14 @@ final class ForumAdminController extends AbstractController
         ]);
     }
 
+    public function create(): Response
+    {
+        return $this->render('admin/forums/create', [
+            'title' => 'Admin — Nouveau forum',
+            'old'   => [],
+        ]);
+    }
+
     public function store(): Response
     {
         $post = $this->request->post();
@@ -47,22 +54,21 @@ final class ForumAdminController extends AbstractController
 
         $type = (string) ($post['type'] ?? '');
         if (!in_array($type, ['specialized', 'faq'], true)) {
-            $v = $this->validate($post, ['name' => 'required']);
-            $this->session->flash('error', 'Type de forum invalide (specialized ou faq).');
+            $this->session->flash('error', 'Type de forum invalide (spécialisé ou FAQ).');
 
-            return $this->redirect('/admin/forums');
+            return $this->redirect('/admin/forums/create');
         }
 
         if ($v->fails()) {
             $this->session->flash('error', 'Données invalides.');
 
-            return $this->redirect('/admin/forums');
+            return $this->redirect('/admin/forums/create');
         }
 
         if ($type === 'faq' && $this->forumDao->findFaqForum() !== null) {
             $this->session->flash('error', 'Un forum FAQ actif existe déjà.');
 
-            return $this->redirect('/admin/forums');
+            return $this->redirect('/admin/forums/create');
         }
 
         $now = date('Y-m-d H:i:s');
@@ -92,6 +98,20 @@ final class ForumAdminController extends AbstractController
         return $this->redirect('/admin/forums');
     }
 
+    public function edit(string $id): Response
+    {
+        /** @var \App\Models\Forum|null $forum */
+        $forum = $this->forumDao->findById((int) $id);
+        if ($forum === null) {
+            throw new NotFoundException('Forum introuvable.');
+        }
+
+        return $this->render('admin/forums/edit', [
+            'title' => 'Admin — Éditer forum',
+            'forum' => $forum,
+        ]);
+    }
+
     public function update(string $id): Response
     {
         /** @var \App\Models\Forum|null $forum */
@@ -103,7 +123,9 @@ final class ForumAdminController extends AbstractController
         $post = $this->request->post();
         $name = trim((string) ($post['name'] ?? ''));
         if ($name === '') {
-            throw new InvalidArgumentException('Nom requis.');
+            $this->session->flash('error', 'Nom requis.');
+
+            return $this->redirect('/admin/forums/' . $forum->id . '/edit');
         }
 
         $this->forumDao->update($forum->id, [

@@ -9,6 +9,21 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 Voir [ROADMAP.md](./ROADMAP.md) pour le chemin vers **1.0.0**.
 
+## [0.5.1] - 2026-11-01
+
+### Modifié
+
+- Formulaires (profil, sujet, FAQ, réponse, édition) : champs natifs `.input` (sans Tailwind FormBuilder).
+- Boutons auth : `btn btn-primary btn-block`.
+- Badges réponses / vues (liste, sujet, recherche).
+- Nav : pastille compte → profil ; sous-nav admin + **Mon profil**.
+- Admin forums : liste + pages créer / éditer ; forum général non supprimable.
+- Statuts FAQ en français (`En attente`, `En revue`, `Approuvée`, …).
+
+### Ajouté
+
+- Comptes démo locaux : `php bin/seed-demo-users.php` (admin / modérateur / user).
+
 ## [0.5.0] - 2026-11-01
 
 ### Modifié

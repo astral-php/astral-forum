@@ -32,7 +32,7 @@
                 <?= $viewEngine->partial('partials/field-error', ['field' => 'password', 'errors' => $errors ?? []]) ?>
             </div>
 
-            <button type="submit" class="btn-block">Se connecter</button>
+            <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
         </form>
 
         <p class="auth-footer">

@@ -35,7 +35,7 @@
                             </a>
                         </div>
                     </div>
-                    <span class="topic-counts"><?= (int) $topic->reply_count ?> rép. · <?= (int) $topic->view_count ?> vues</span>
+                    <?php require __DIR__ . '/../partials/topic-stats.php'; ?>
                 </li>
             <?php endforeach ?>
         </ul>

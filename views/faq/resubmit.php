@@ -13,19 +13,20 @@
     <div class="auth-card" style="max-width:100%">
         <form method="POST" action="/account/faq-proposals/<?= (int) $submission->id ?>/resubmit" class="form-stack">
             <?= $csrf->field() ?>
-            <?php if (isset($form)): ?>
-                <?= $form->field(name: 'title', label: 'Titre', value: (string) ($old['title'] ?? ''), errors: $errors ?? []) ?>
-                <?= $form->field(name: 'description', label: 'Description', value: (string) ($old['description'] ?? ''), errors: $errors ?? [], options: ['type' => 'textarea', 'rows' => 8, 'required' => true]) ?>
-            <?php else: ?>
-                <div class="field">
-                    <label for="title">Titre</label>
-                    <input class="input" id="title" name="title" required value="<?= htmlspecialchars((string) ($old['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
-                </div>
-                <div class="field">
-                    <label for="description">Description</label>
-                    <textarea class="input" id="description" name="description" required rows="8"><?= htmlspecialchars((string) ($old['description'] ?? ''), ENT_QUOTES, 'UTF-8') ?></textarea>
-                </div>
-            <?php endif ?>
+            <div class="field">
+                <label for="title">Titre</label>
+                <input class="input" id="title" name="title" required value="<?= htmlspecialchars((string) ($old['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+                <?php if (!empty($errors['title'])): ?>
+                    <p class="field-error"><?= htmlspecialchars((string) $errors['title'][0], ENT_QUOTES, 'UTF-8') ?></p>
+                <?php endif ?>
+            </div>
+            <div class="field">
+                <label for="description">Description</label>
+                <textarea class="input" id="description" name="description" required rows="8"><?= htmlspecialchars((string) ($old['description'] ?? ''), ENT_QUOTES, 'UTF-8') ?></textarea>
+                <?php if (!empty($errors['description'])): ?>
+                    <p class="field-error"><?= htmlspecialchars((string) $errors['description'][0], ENT_QUOTES, 'UTF-8') ?></p>
+                <?php endif ?>
+            </div>
             <button type="submit" class="btn btn-primary">Renvoyer</button>
         </form>
     </div>

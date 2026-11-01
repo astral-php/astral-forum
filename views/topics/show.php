@@ -18,12 +18,11 @@ $subscribed = $subscribed ?? false;
     </p>
     <div class="page-intro">
         <h1><?= htmlspecialchars($topic->title, ENT_QUOTES, 'UTF-8') ?></h1>
-        <p>
-            <?php if ($topic->isLocked()): ?><span class="pill">Verrouillé</span> <?php endif ?>
-            <?php if ($topic->isPinned()): ?><span class="pill">Épinglé</span> <?php endif ?>
-            <?= (int) $topic->reply_count ?> réponse<?= (int) $topic->reply_count > 1 ? 's' : '' ?>
-            · <?= (int) $topic->view_count ?> vue<?= (int) $topic->view_count > 1 ? 's' : '' ?>
-            · <?= htmlspecialchars($topic->created_at, ENT_QUOTES, 'UTF-8') ?>
+        <p class="topic-intro-meta">
+            <?php if ($topic->isLocked()): ?><span class="pill">Verrouillé</span><?php endif ?>
+            <?php if ($topic->isPinned()): ?><span class="pill">Épinglé</span><?php endif ?>
+            <?php $verbose = true; require __DIR__ . '/../partials/topic-stats.php'; ?>
+            <span class="topic-date"><?= htmlspecialchars($topic->created_at, ENT_QUOTES, 'UTF-8') ?></span>
         </p>
     </div>
 
@@ -97,14 +96,13 @@ $subscribed = $subscribed ?? false;
             <h2 style="font-family:Fraunces,Georgia,serif;font-size:1.2rem;margin:0 0 1rem;text-align:left">Répondre</h2>
             <form method="POST" action="/topics/<?= (int) $topic->id ?>/posts" class="form-stack">
                 <?= $csrf->field() ?>
-                <?php if (isset($form)): ?>
-                    <?= $form->field(name: 'content', label: 'Message', value: '', errors: $errors ?? [], options: ['type' => 'textarea', 'required' => true, 'rows' => 5]) ?>
-                <?php else: ?>
-                    <div class="field">
-                        <label for="content">Message</label>
-                        <textarea class="input" id="content" name="content" required rows="5"></textarea>
-                    </div>
-                <?php endif ?>
+                <div class="field">
+                    <label for="content">Message</label>
+                    <textarea class="input" id="content" name="content" required rows="5"></textarea>
+                    <?php if (!empty($errors['content'])): ?>
+                        <p class="field-error"><?= htmlspecialchars((string) $errors['content'][0], ENT_QUOTES, 'UTF-8') ?></p>
+                    <?php endif ?>
+                </div>
                 <button type="submit" class="btn btn-primary">Envoyer</button>
             </form>
         </div>
