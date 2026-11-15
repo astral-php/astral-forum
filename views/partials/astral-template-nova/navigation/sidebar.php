@@ -1,0 +1,2 @@
+<?php $items=$items??[]; ?>
+<nav class="nova-nav" aria-label="<?= htmlspecialchars((string)($label??'Navigation'),ENT_QUOTES,'UTF-8') ?>"><?php foreach($items as $item): ?><a class="nova-nav-link<?= !empty($item['active'])?' is-active':'' ?>" href="<?= htmlspecialchars(\Astral\TemplateNova\Template::safeUrl((string) ($item['href'] ?? '#')), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"<?= !empty($item['active'])?' aria-current="page"':'' ?>><?= htmlspecialchars((string)($item['label']??''),ENT_QUOTES,'UTF-8') ?></a><?php endforeach ?></nav>

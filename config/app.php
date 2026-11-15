@@ -19,7 +19,8 @@ return [
     'github_url'  => $_ENV['ASTRAL_GITHUB_URL']  ?? 'https://github.com/astral-php',
     'website_url' => $_ENV['ASTRAL_WEBSITE_URL'] ?? 'https://github.com/astral-php',
 
-    // Nova maroon — famille UI Astral
+    // Nova maroon-light — famille UI Astral (alignée palettes astral-nova-css)
+    'nova_theme'   => 'maroon-light',
     'primary'      => $_ENV['FORUM_PRIMARY']      ?? '#9f1239',
     'primary_soft' => $_ENV['FORUM_PRIMARY_SOFT'] ?? '#fce7ef',
 

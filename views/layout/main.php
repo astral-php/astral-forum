@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-nova-theme="maroon-light" data-nova-mode="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title ?? 'Astral Forum', ENT_QUOTES, 'UTF-8') ?></title>
+    <meta name="theme-color" content="#9f1239">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/nova/nova.css?v=1.1.0">
+    <link rel="stylesheet" href="/assets/nova/nova-icons.css?v=1.1.0">
     <link rel="stylesheet" href="/assets/css/forum.css">
 </head>
 <?php
@@ -88,19 +91,20 @@ $roleBadgeClass = match ($accountRole) {
 
         <main>
             <?php if ($session->hasFlash('success')): ?>
-                <div class="flash-ok"><?= htmlspecialchars((string) $session->getFlash('success'), ENT_QUOTES, 'UTF-8') ?></div>
+                <div class="nova-alert nova-alert-success" role="status"><?= htmlspecialchars((string) $session->getFlash('success'), ENT_QUOTES, 'UTF-8') ?></div>
             <?php endif ?>
             <?php if ($session->hasFlash('error')): ?>
-                <div class="flash-err"><?= htmlspecialchars((string) $session->getFlash('error'), ENT_QUOTES, 'UTF-8') ?></div>
+                <div class="nova-alert nova-alert-danger" role="alert"><?= htmlspecialchars((string) $session->getFlash('error'), ENT_QUOTES, 'UTF-8') ?></div>
             <?php endif ?>
 
             <?= $content ?? '' ?>
         </main>
 
         <footer class="site-footer">
-            Astral Forum · Nova Maroon Light ·
+            Astral Forum · Nova Design maroon-light ·
             <a href="https://github.com/astral-php/astral-forum" target="_blank" rel="noopener">GitHub</a>
         </footer>
     </div>
+    <script type="module" src="/assets/nova/nova.js?v=1.1.0"></script>
 </body>
 </html>

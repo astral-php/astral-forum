@@ -1,22 +1,24 @@
 {
   "name": "astral-php/astral-forum",
-  "description": "Astral Forum — forums, sujets, posts et FAQ modérée (create-project starter 2.1)",
+  "description": "Astral Forum — forums, sujets, posts et FAQ modérée (Nova Design maroon-light)",
   "type": "project",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
   "keywords": [
     "astral",
     "php",
     "mvc",
-    "forum"
+    "forum",
+    "nova"
   ],
   "homepage": "https://github.com/astral-php/astral-forum",
   "require": {
     "php": "^8.3",
     "astral-php/astral-auth-extra": "^0.2",
     "astral-php/astral-cache": "^0.1",
-    "astral-php/astral-core": "^2.1",
-    "astral-php/astral-form": "^0.1.2"
+    "astral-php/astral-core": "^2.2",
+    "astral-php/astral-form": "^0.1.2",
+    "astral-php/astral-nova-design": "^1.1"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.6 || ^10.5 || ^11.0"
@@ -38,7 +40,11 @@
   "scripts": {
     "serve": "php -S 127.0.0.1:8083 -t public public/router.php",
     "qa": "php bin/qa-parcours.php",
-    "test": "phpunit --configuration phpunit.xml"
+    "test": "phpunit --configuration phpunit.xml",
+    "nova:publish": "php bin/nova-publish.php",
+    "post-update-cmd": [
+      "@nova:publish"
+    ]
   },
   "minimum-stability": "stable",
   "prefer-stable": true

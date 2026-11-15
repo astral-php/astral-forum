@@ -60,9 +60,8 @@ Déjà livré en P1 avant 1.0 :
 
 ## Après (1.1+)
 
-15. Vite / Tailwind build
-16. astral-template layouts
-17. Digests async (worker)
+15. ~~Nova Design package (`astral-nova-design`)~~ ✅ **2.2 Phase 2.1** — forum **100 % Nova**
+16. Digests async (worker)
 18. Pièces jointes
 19. Multi-langue
 20. API REST

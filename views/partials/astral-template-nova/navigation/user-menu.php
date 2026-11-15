@@ -1,0 +1,1 @@
+<div class="nova-user-menu"><a class="nova-nav-link" href="<?= htmlspecialchars(\Astral\TemplateNova\Template::safeUrl((string) ($userMenuHref ?? '/account')), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"><?= htmlspecialchars((string)($userName??'Mon compte'),ENT_QUOTES,'UTF-8') ?></a></div>

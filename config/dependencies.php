@@ -6,12 +6,14 @@ use App\Providers\AppServiceProvider;
 use Astral\AuthExtra\AuthExtraServiceProvider;
 use Astral\Cache\CacheServiceProvider;
 use Astral\Form\FormServiceProvider;
+use Astral\TemplateNova\TemplateServiceProvider;
 use Core\Providers\DatabaseServiceProvider;
 use Core\Providers\FrameworkServiceProvider;
 
 return [
     FrameworkServiceProvider::class,
     DatabaseServiceProvider::class,
+    TemplateServiceProvider::class,
     CacheServiceProvider::class,
     FormServiceProvider::class,
     AuthExtraServiceProvider::class,

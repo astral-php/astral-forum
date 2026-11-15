@@ -5,9 +5,22 @@ Toutes les modifications notables d’**astral-forum** sont documentées ici.
 Le format s’inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.1.0] — 2026-11-15 (feuille 2.2 · Phase 2.1)
+
+### Ajouté
+
+- **100 % Nova Design** : require `astral-nova-design:^1.1` + `astral-core:^2.2`
+- `composer nova:publish` → `public/assets/nova/`
+- Layouts / flash / pagination / erreurs sur primitives Nova · thème `maroon-light`
+- `forum.css` : composition métier uniquement (tokens Nova)
+
+### Notes
+
+- News site : reportée en fin de vague migrations apps (lot 2.2).
+
 ## [Unreleased]
 
-### Prochaine phase (post-1.0)
+### Prochaine phase produit (lot 2.3)
 
 - Markdown assaini + doc utilisateur (sans IA).
 - Polish UI restant (empty states, mobile, breadcrumbs).

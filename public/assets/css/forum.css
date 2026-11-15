@@ -1,14 +1,14 @@
-/* Astral Forum — Nova Maroon Light (0.5) */
+/* Astral Forum — composition métier (tokens = nova.css maroon-light) */
 :root {
-  --ink: #24171c;
-  --muted: #78666d;
-  --paper: #fff9fb;
-  --panel: #ffffff;
-  --line: #eedde4;
-  --accent: #941b43;
-  --accent-dark: #741332;
-  --accent-soft: #fbeaf0;
-  --rose-100: #f8e2e9;
+  --ink: var(--nova-text, #24171c);
+  --muted: var(--nova-text-muted, #78666d);
+  --paper: var(--nova-surface, #fff5f7);
+  --panel: var(--nova-background, #fff);
+  --line: var(--nova-border, #eedde4);
+  --accent: var(--nova-primary, #9f1239);
+  --accent-dark: var(--nova-primary-hover, #7f0e2d);
+  --accent-soft: var(--nova-surface-hover, #fce7ef);
+  --rose-100: var(--nova-surface-hover, #fce7ef);
   --shadow-soft: 0 12px 34px rgba(91, 23, 48, .07);
   --shadow-card: 0 5px 18px rgba(91, 23, 48, .045);
 }

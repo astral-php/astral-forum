@@ -1,0 +1,25 @@
+/* Astral Nova Icons — sizing + stroke defaults (pair with icons.svg sprite). */
+.nova-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nova-icon--sm { font-size: 0.875rem; }
+.nova-icon--md { font-size: 1rem; }
+.nova-icon--lg { font-size: 1.5rem; }
+.nova-icon--xl { font-size: 2rem; }
+
+/* Filled symbols (ids ending with -fill) — keep stroke off. */
+.nova-icon--filled,
+.nova-icon[data-nova-icon-variant="fill"] {
+  fill: currentColor;
+  stroke: none;
+}

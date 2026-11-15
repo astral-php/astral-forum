@@ -1,15 +1,15 @@
 # Astral Forum
 
-Forum **create-project** (starter **2.1** + astral-core **^2.1**) : forums, sujets, posts, FAQ modérée.
+Forum **create-project** (astral-core **^2.2** + **Nova Design ^1.1**, palette maroon-light) : forums, sujets, posts, FAQ modérée.
 
 [![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)](https://www.php.net)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue)](./CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![Tests](https://img.shields.io/badge/tests-PHPUnit%20OK-9933CC)](./phpunit.xml)
 
 | | |
 |---|---|
-| **UI** | Nova **maroon** (`#9f1239`) |
+| **UI** | **100 % Nova Design** · palette **maroon-light** · `composer nova:publish` |
 | **URL locale** | [http://astral-forum.local/](http://astral-forum.local/) |
 | **Roadmap** | [ROADMAP.md](./ROADMAP.md) |
 
@@ -25,6 +25,7 @@ Forum **create-project** (starter **2.1** + astral-core **^2.1**) : forums, suje
 composer create-project astral-php/astral-forum:^1.0 mon-forum
 cd mon-forum
 cp .env.example .env
+composer nova:publish
 php bin/console migrate
 ```
 
@@ -36,7 +37,7 @@ Docs : [docs/INSTALL.md](./docs/INSTALL.md) · [docs/FAQ.md](./docs/FAQ.md).
 ## Fonctionnalités 1.0.0
 
 - Setup identité communauté (1re visite admin)
-- UI **Nova Maroon Light** + polish formulaires / nav compte / admin forums
+- UI **Nova Design** (require `astral-nova-design`, `composer nova:publish`) + composition `forum.css`
 - Forum général seedé à la migration
 - Lecture publique, création sujet + réponse (membres)
 - Recherche, compteurs réponses/vues, cache liste forums
